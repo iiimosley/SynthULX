@@ -1,0 +1,14 @@
+{#if aAttack}
+<h4>ATTACK</h4>
+<p>the amount of time it takes for the oscillator to reach it's maximum volume</p>
+{:else if aDecay}
+<h4>DECAY</h4>
+<p>the amount of time it takes for the oscillator's volume to drop to its sustained amplitude</p>
+<p class="note"><strong class="attention">Note:</strong> Setting the decay lower than the sustain will have little to no affect</p>
+{:else if aSustain}
+<h4>SUSTAIN</h4>
+<p>the continued volume of the oscillator for the duration of the keypress</p>
+{:else if aRelease}
+<h4>RELEASE</h4>
+<p>the amount of time it takes for the oscillator to drop back down to 0 after the keypress release</p>
+{/if} 

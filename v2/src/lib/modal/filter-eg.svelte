@@ -1,0 +1,31 @@
+<div id="filterEGView">
+    <main>
+        <h1>Filter Envelope Generator</h1>
+        <p>where the real fun starts</p>
+        <div id="eduFilterEG">
+                <input type="range" class="v-slide" id="fAttack" min="0" max="1" step="0.01" value="0">
+                <input type="range" class="v-slide" id="fDecay" min="0" max="1" step="0.01" value="0">
+                <input type="range" class="v-slide" id="fSustain" min="0" max="1" step="0.01" value="0">
+                <input type="range" class="v-slide" id="fRelease" min="0" max="1" step="0.01" value="0">
+                <div>
+                    <label for="fAttack">A</label>
+                    <label for="fDecay">D</label>
+                    <label for="fAttack">S</label>
+                    <label for="fRelease">R</label>
+                </div>
+        </div>
+        <div id="filterDetail"></div>
+    </main>
+    <aside>
+        <div id="filterChart">
+            <canvas id="filterADSR"></canvas>
+        </div>
+        <div class="spacebarEvent">
+            <p>press spacebar to play oscillator</p>
+        </div>
+    </aside>
+    <div class="continueSection">
+        <span id="pickFilter">continue with selected parameters</span>
+    </div>
+</div>
+<span class="closeChip">&times;</span>

@@ -1,0 +1,17 @@
+<div class="patchModal">
+    <div class="modalContent">
+        <h2>Edit patch</h2>
+        <p>overwrite all current setting for patch...</p>
+        <select id="patchOver">
+            {#each ADD_AS userPatches}
+            <option value="{@key}">{patch_name}</option>
+            {/each}
+        </select>
+        <div>
+        <label for="changeName">Rename patch?</label><input type="checkbox" name="changeName" id="changeName">
+        </div>
+        <input type="text" name="newName" id="newName" disabled>
+        <a id="editPatch" class="patchFeat">Overwrite Patch</a>
+    </div>
+    <span class="closeChip">&times;</span>
+</div>

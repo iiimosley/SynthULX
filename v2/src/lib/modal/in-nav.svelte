@@ -1,0 +1,10 @@
+<div><a id="logout">Logout</a></div>
+<div id="userPatches">
+    <a id="dropdown">Patches</a>
+    <div id="patchDrop">
+            {#each ADD_AS userPatches}
+                <div class="patchSelect"><a id="{@key}">{patch_name}</a> <span class="deleteChip">&times;</span></div>
+            {/each}
+    </div>
+</div>
+<div id="startBuild"><a>Start SynthBuilder</a></div>
