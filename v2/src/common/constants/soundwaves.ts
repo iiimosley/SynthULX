@@ -27,6 +27,6 @@ export const SOUNDWAVE: Record<Soundwave, SoundwaveDetails> = {
   sawtooth: {
     title: "Sawtooth Wave",
     harmonicContent: 50,
-    description: "Most complex structure of basic soundwaves",
+    description: "Most complex structure of basic soundwave. Used brass- and string-like sounds.",
   },
 };
