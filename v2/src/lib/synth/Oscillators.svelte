@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { soundwaves } from '../constants/soundwaves';
+  import { soundwaves } from '@/common/constants/soundwaves';
 </script>
 
 <div id="oscType">

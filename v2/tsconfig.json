@@ -16,6 +16,12 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte", "scripts/**/*.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
