@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { soundwaves } from '@/common/constants/soundwaves';
+  import { SOUNDWAVE } from '@/common/soundwaves';
 </script>
 
 <div id="oscType">
-  {#each soundwaves as wave}
+  {#each Object.entries(SOUNDWAVE) as [key, {title}]}
     <div>
-      <label for={wave}>{wave}</label>
-      <input type="radio" name="osc" id={wave} value={wave} checked={wave === 'sine'}/>
+      <label for={key}>{title}</label>
+      <input type="radio" name="osc" id={key} value={key} checked={key === 'sine'}/>
     </div>
   {/each}
 </div>
