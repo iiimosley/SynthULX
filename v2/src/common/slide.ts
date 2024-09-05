@@ -1,4 +1,4 @@
-export type SlideParams = {
+export type SLIDE_PARAMS = {
   min: number;
   max: number;
   step: number;

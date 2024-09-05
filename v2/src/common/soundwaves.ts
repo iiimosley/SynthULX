@@ -1,6 +1,6 @@
-export const soundwaves = ["sine", "triangle", "square", "sawtooth"] as const;
+export const SOUNDWAVES = ["sine", "triangle", "square", "sawtooth"] as const;
 
-export type Soundwave = (typeof soundwaves)[number];
+export type Soundwave = (typeof SOUNDWAVES)[number];
 
 export type SoundwaveDetails = {
   title: string;
@@ -10,23 +10,24 @@ export type SoundwaveDetails = {
 
 export const SOUNDWAVE: Record<Soundwave, SoundwaveDetails> = {
   sine: {
-    title: "Sine Wave",
+    title: "Sine",
     harmonicContent: 1,
     description: "Purest form of a soundwave",
   },
   triangle: {
-    title: "Triangle Wave",
+    title: "Triangle",
     harmonicContent: 25,
     description: "Great for soft, flute-like sounds",
   },
   square: {
-    title: "Square Wave",
+    title: "Square",
     harmonicContent: 25,
     description: "Ideal for hollow, eerie, woodwind-like sounds",
   },
   sawtooth: {
-    title: "Sawtooth Wave",
+    title: "Sawtooth",
     harmonicContent: 50,
-    description: "Most complex structure of basic soundwave. Used brass- and string-like sounds.",
+    description:
+      "Most complex structure of basic soundwave. Used brass- and string-like sounds.",
   },
 };
