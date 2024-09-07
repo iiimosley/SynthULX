@@ -1,21 +1,12 @@
 <script lang=ts>
   import { KEYBOARD } from "@/common/keyboard";
+  import KeyActions from "@/stores/keyboard";
   import PatchActions from "./PatchActions.svelte";
 
   let showKeyNames = true;
-
-  const keys = new Set();
-
-  function handleKeydown(event: KeyboardEvent) {
-    keys.add(event.key);
-  }
-
-  function handleKeyup(event: KeyboardEvent) {
-    keys.delete(event.key);
-  }
 </script>
 
-<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}/>
+<svelte:window on:keydown={KeyActions.down} on:keyup={KeyActions.up}/>
 
 <div>
   <div id="keyMap">
