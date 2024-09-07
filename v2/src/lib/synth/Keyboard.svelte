@@ -1,23 +1,44 @@
-<script>
+<script lang=ts>
   import { KEYBOARD } from "@/common/keyboard";
+  import PatchActions from "./PatchActions.svelte";
+
+  let showKeyNames = true;
+
+  const keys = new Set();
+
+  function handleKeydown(event: KeyboardEvent) {
+    keys.add(event.key);
+  }
+
+  function handleKeyup(event: KeyboardEvent) {
+    keys.delete(event.key);
+  }
 </script>
+
+<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}/>
 
 <div>
   <div id="keyMap">
-    {#each Object.entries(KEYBOARD) as [code, values]}
-      <div class={values.note.includes('#') ? "flat" : ""} id={`key${code}`}>
-        <span style="display: none" class={values.note.includes('#') ? "offNote" : ""}>
-          {values.key.toUpperCase()}
-        </span>
+    {#each Object.entries(KEYBOARD) as [key, note]}
+      <div class={note.includes('#') ? "flat" : ""} id={`key${key}`}>
+        {#if showKeyNames}
+          <span class={note.includes('#') ? "offNote" : ""}>
+            {key.toUpperCase()}
+          </span>
+        {/if}
       </div>
     {/each}
   </div>
+
   <div id="keyCheck">
-    <input type="checkbox" id="showKeys" checked />
-    <label for="showKeys"
-      >Show Key Map
+    <input type="checkbox" bind:checked={showKeyNames}/>
+    <label for="showKeys">
+      Show Key Map
       <sup>QWERTY</sup>
     </label>
-    <div id="userTools"></div>
+    <PatchActions />
   </div>
 </div>
+
+
+
