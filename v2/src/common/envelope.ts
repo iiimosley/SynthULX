@@ -4,3 +4,5 @@ export interface Envelope {
   sustain: number;
   release: number;
 };
+
+export type EnvelopeParam = keyof Envelope;
