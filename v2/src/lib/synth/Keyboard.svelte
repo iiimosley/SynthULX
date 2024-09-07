@@ -1,7 +1,6 @@
 <script lang=ts>
   import { KEYBOARD } from "@/common/keyboard";
   import KeyActions from "@/stores/keyboard";
-  import PatchActions from "./PatchActions.svelte";
 
   let showKeyNames = true;
 </script>
@@ -27,7 +26,9 @@
       Show Key Map
       <sup>QWERTY</sup>
     </label>
-    <PatchActions />
+    <!-- Only allow if User is logged in -->
+    <button id="callSave">Save Patch</button>
+    <button id="callEdit">Edit Patch</button>
   </div>
 </div>
 
