@@ -13,9 +13,7 @@ export interface Patch {
 }
 
 export type PatchSet = Record<string, Patch>;
-
 export type PatchId = keyof PatchSet;
-
 export type IdentifiedPatch = Patch & { id: PatchId };
 
 export const DEFAULT_PATCHES: PatchSet = {

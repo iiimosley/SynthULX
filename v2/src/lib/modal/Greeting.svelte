@@ -6,6 +6,6 @@
          <span id="chromeMsg">If you are using Chrome:  </span>Please disable the <a class="autoPlayMsg" href="https://developers.google.com/web/updates/2017/09/autoplay-policy-changes">Autoplay Policy</a> in your browser to use SynthULX. You may do so by directing your browser to <a class="autoPlayMsg" href="chrome://flags/#autoplay-policy">chrome://flags/#autoplay-policy</a> and selecting <strong>'No user gesture required'</strong> in the drop down menu. Currently working to remedy this issue.
     </p>
     <p>To save &amp; edit patches, please create an account or login</p>
-    <a id="promptLogin">Create Account // Login <img src="../images/google-logo.png"></a>
+    <a id="promptLogin">Create Account // Login <img alt="Google Account Sign-in" src="../images/google-logo.png"></a>
     <a id="promptGuest" class="closeChip">Continue as Guest</a>
 </div>
