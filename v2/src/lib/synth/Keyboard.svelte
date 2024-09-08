@@ -3,14 +3,32 @@
   import KeyActions from "@/stores/keyboard";
 
   let showKeyNames = true;
+
+  const getKeyClass = (key: string, note: string) => {
+    let keyClasses = [];
+
+    if (note.includes('#')) {
+      keyClasses.push("flat");
+    }
+
+    if ($KeyActions.has(key)) {
+      keyClasses.push(note.includes('#') ? "keyfillFlat" : "keyfill");
+    }
+
+    return keyClasses.join(" ");
+  }
+
 </script>
 
-<svelte:window on:keydown={KeyActions.down} on:keyup={KeyActions.up}/>
+<svelte:window on:keydown|preventDefault={KeyActions.down} on:keyup|preventDefault={KeyActions.up}/>
 
+<!-- <h1>{[...$KeyActions].join(", ")}</h1> -->
 <div>
   <div id="keyMap">
     {#each Object.entries(KEYBOARD) as [key, note]}
-      <div class={note.includes('#') ? "flat" : ""} id={`key${key}`}>
+      <div id={`key${key}`} 
+        class={(note.includes('#') ? "flat" : "") + ($KeyActions.has(key) ? note.includes('#') ? " keyFillFlat" : " keyFill" : "")}
+      >
         {#if showKeyNames}
           <span class={note.includes('#') ? "offNote" : ""}>
             {key.toUpperCase()}

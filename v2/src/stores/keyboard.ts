@@ -1,4 +1,5 @@
 import { writable } from "svelte/store";
+import { KEYBOARD } from "../common/keyboard";
 
 const initKeyStore = () => {
   const keys = new Set<string>();
@@ -8,17 +9,21 @@ const initKeyStore = () => {
   return {
     subscribe,
     down: (event: KeyboardEvent) => {
-      update((k) => k.add(event.key));
+      if (event.key in KEYBOARD) {
+        update((k) => k.add(event.key));
+      }
     },
     up: (event: KeyboardEvent) => {
       update((k) => {
-        k.delete(event.key)
+        if (event.key in KEYBOARD) {
+          k.delete(event.key);
+        }
         return k;
       });
     },
     reset: () => set(new Set<string>()),
   };
-}
+};
 
 const KeyActions = initKeyStore();
 
