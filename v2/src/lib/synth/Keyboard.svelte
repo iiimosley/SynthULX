@@ -1,9 +1,12 @@
 <script lang=ts>
   import { KEYBOARD } from "@/common/keyboard";
+  import { INIT_PATCH } from "@/common/patch";
+  import { Synth } from "@/engines/synth";
   import KeyActions from "@/stores/keyboard";
 
-  let showKeyNames = true;
+  const synth = new Synth(INIT_PATCH);
 
+  let showKeyNames = true;
 </script>
 
 <svelte:window on:keydown|preventDefault={KeyActions.down} on:keyup|preventDefault={KeyActions.up}/>
