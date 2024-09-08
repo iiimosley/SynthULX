@@ -626,7 +626,6 @@ input[type="range"] {
   position: relative;
   margin: 2vw auto 0;
   padding: 1.7vw 0;
-  width: $synthWidth;
   border: $keyBorder;
   border-radius: 0.9em 0.9em 0 0;
   background: repeating-radial-gradient(
@@ -683,7 +682,6 @@ input[type="range"] {
   font-size: 0;
   margin: 1em auto;
   padding-bottom: 0.1vw;
-  width: $synthWidth;
   height: 20vw;
   border-top: $keyBorder;
   border-right: $keyBorder;

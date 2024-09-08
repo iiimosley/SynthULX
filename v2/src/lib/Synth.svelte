@@ -10,7 +10,7 @@
 </script>
 
 <div>
-  <div id="synthWrap">
+  <div id="synthWrap" class="w-synth">
     <h3 id="brand">SynthULX</h3>
     <Octave />
     <Oscillators />
