@@ -2,7 +2,7 @@ import type { Envelope } from "./envelope";
 import type { Soundwave } from "./soundwaves";
 
 export interface Patch {
-  name: string
+  name: string;
   detune: number;
   osc: Soundwave;
   amp: Envelope;
@@ -16,8 +16,30 @@ export type PatchSet = Record<string, Patch>;
 export type PatchId = keyof PatchSet;
 export type IdentifiedPatch = Patch & { id: PatchId };
 
-export const DEFAULT_PATCHES: PatchSet = {
-  patch1: {
+export const INIT_PATCH: IdentifiedPatch = {
+  id: "init",
+  name: "init",
+  detune: 0,
+  osc: "sine",
+  amp: {
+    attack: 0.01,
+    decay: 1,
+    sustain: 1,
+    release: 0.01,
+  },
+  filter: {
+    attack: 0.01,
+    decay: 1,
+    sustain: 1,
+    release: 1,
+    cutoff: 300,
+    resonance: 0,
+  },
+};
+
+export const DEFAULT_PATCHES: IdentifiedPatch[] = [
+  {
+    id: "patch1",
     name: "patch1",
     detune: 0,
     osc: "square",
@@ -36,7 +58,8 @@ export const DEFAULT_PATCHES: PatchSet = {
       resonance: 5,
     },
   },
-  patch2: {
+  {
+    id: "patch2",
     name: "patch2",
     detune: 0,
     osc: "sawtooth",
@@ -55,7 +78,8 @@ export const DEFAULT_PATCHES: PatchSet = {
       resonance: 0,
     },
   },
-  patch3: {
+  {
+    id: "patch3",
     name: "patch3",
     detune: 0,
     osc: "triangle",
@@ -74,7 +98,8 @@ export const DEFAULT_PATCHES: PatchSet = {
       resonance: 6,
     },
   },
-  patch4: {
+  {
+    id: "patch4",
     name: "patch4",
     detune: 0,
     osc: "square",
@@ -93,4 +118,4 @@ export const DEFAULT_PATCHES: PatchSet = {
       resonance: 10,
     },
   },
-};
+];

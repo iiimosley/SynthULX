@@ -1,13 +1,14 @@
 <script>
   import { OCTAVES } from '@/common/octaves';
+  import PatchStore from '@/stores/patch';
 </script>
 
 <div id="octave">
   <h4>transpose</h4>
   {#each Object.entries(OCTAVES) as [key, detune]}
     <div>
-      <label for={key}>{detune > OCTAVES.NONE && "+"}{detune < 0 && "-"}{detune}</label>
-      <input type="radio" name="detune" id={key} value={detune * 1200} checked={detune === OCTAVES.NONE}/>
+      <label for={key}>{detune > OCTAVES.NONE && "+"}{detune < OCTAVES.NONE && "-"}{detune}</label>
+      <input type="radio" name="detune" id={key} value={detune * 1200} checked={detune === $PatchStore.detune}/>
     </div>
   {/each}
 </div>

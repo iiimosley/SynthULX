@@ -1,9 +1,13 @@
+<script>
+  import PatchStore from "@/stores/patch";
+  import { DEFAULT_PATCHES } from "@/common/patch";
+</script>
+
 <div id="patchWrap">
   <h3>patches</h3>
   <div id="patchBtns">
-    <input type="radio" name="patch" id="patch1" />
-    <input type="radio" name="patch" id="patch2" />
-    <input type="radio" name="patch" id="patch3" />
-    <input type="radio" name="patch" id="patch4" />
+    {#each DEFAULT_PATCHES as patch}
+      <input type="radio" name="default-patch" id={patch.id} on:click={() => PatchStore.set(patch)}>
+    {/each}
   </div>
 </div>

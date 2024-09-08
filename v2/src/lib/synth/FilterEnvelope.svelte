@@ -1,45 +1,49 @@
+<script>
+  import PatchStore from "@/stores/patch";
+</script>
+
 <div id="filterEG">
   <h4>Filter EG</h4>
   <input
     type="range"
     class="v-slide"
-    id="filterAttack"
+    id="filter-attack"
     min="0"
     max="3"
     step="0.01"
-    value="0.01"
+    value={$PatchStore.filter.attack}
   />
   <input
     type="range"
     class="v-slide"
-    id="filterDecay"
+    id="filter-decay"
     min="0"
     max="1"
     step="0.01"
-    value="1"
+    value={$PatchStore.filter.decay}
   />
   <input
     type="range"
     class="v-slide"
-    id="filterSustain"
+    id="filter-sustain"
     min="0"
     max="1"
     step="0.01"
-    value="1"
+    value={$PatchStore.filter.sustain}
   />
   <input
     type="range"
     class="v-slide"
-    id="filterRelease"
+    id="filter-release"
     min="0"
     max="4.5"
     step="0.01"
-    value="0.01"
+    value={$PatchStore.filter.release}
   />
   <div>
-    <label for="filterAttack">A</label>
-    <label for="filterDecay">D</label>
-    <label for="filterAttack">S</label>
-    <label for="filterRelease">R</label>
+    <label for="filter-attack">A</label>
+    <label for="filter-decay">D</label>
+    <label for="filter-sustain">S</label>
+    <label for="filter-release">R</label>
   </div>
 </div>

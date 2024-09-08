@@ -1,27 +1,31 @@
+<script>
+  import PatchStore from "@/stores/patch";
+</script>
+
 <div id="filter">
   <h4>Filter</h4>
   <div class="textOver">
     <input
       type="range"
       class="v-slide"
-      id="filterFreq"
+      id="filter-cutoff"
       min="100"
       max="8000"
       step="10"
-      value="300"
+      value={$PatchStore.filter.cutoff}
     />
-    <label for="filterFreq">Cutoff</label>
+    <label for="filter-cutoff">Cutoff</label>
   </div>
   <div class="textOver">
     <input
       type="range"
       class="v-slide"
-      id="filterQ"
+      id="filter-resonance"
       min="0"
       max="18"
       step="1"
-      value="0"
+      value={$PatchStore.filter.resonance}
     />
-    <label for="filterQ">Resonance</label>
+    <label for="filter-resonance">Resonance</label>
   </div>
 </div>

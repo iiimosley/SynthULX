@@ -1,31 +1,35 @@
+<script>
+  import PatchStore from "@/stores/patch";
+</script>
+
 <div id="ampEG">
   <h4>Amp EG</h4>
   <input
     type="range"
     class="v-slide"
-    id="ampAttack"
+    id="amp-attack"
     min="0.01"
     max="3"
     step="0.01"
-    value="0.01"
+    value={$PatchStore.amp.attack}
   />
   <input
     type="range"
     class="v-slide"
-    id="ampDecay"
+    id="amp-decay"
     min="0.01"
     max="1"
     step="0.01"
-    value="1"
+    value={$PatchStore.amp.decay}
   />
   <input
     type="range"
     class="v-slide"
-    id="ampSustain"
+    id="amp-sustain"
     min="0.01"
     max="1"
     step="0.01"
-    value="1"
+    value={$PatchStore.amp.sustain}
   />
   <input
     type="range"
@@ -34,12 +38,12 @@
     min="0.01"
     max="4.5"
     step="0.01"
-    value="0.01"
+    value={$PatchStore.amp.release}
   />
   <div>
-    <label for="ampAttack">A</label>
-    <label for="ampDecay">D</label>
-    <label for="ampAttack">S</label>
-    <label for="ampRelease">R</label>
+    <label for="amp-attack">A</label>
+    <label for="amp-decay">D</label>
+    <label for="amp-attack">S</label>
+    <label for="amp-release">R</label>
   </div>
 </div>
