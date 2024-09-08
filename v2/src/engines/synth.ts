@@ -1,5 +1,5 @@
 import { KEYBOARD } from "@/common/keyboard";
-import type { IdentifiedPatch } from "@/common/patch";
+import { INIT_PATCH, type IdentifiedPatch } from "@/common/patch";
 import { DEFAULT_VOLUME } from "@/common/volume";
 
 declare global {
@@ -9,63 +9,82 @@ declare global {
 }
 
 export class Synth {
+  private patch: IdentifiedPatch;
   private context: AudioContext;
   private gainNode: GainNode;
-  private oscillators: Record<string, OscillatorNode> = {};
-  private patch: IdentifiedPatch;
+  private voices: Record<
+    string,
+    { state: "playing" | "stopped"; osc: OscillatorNode; gain: GainNode }
+  > = {};
 
-  constructor(patch: IdentifiedPatch, volume: number = DEFAULT_VOLUME) {
+  constructor(patch: IdentifiedPatch, volume: number) {
     this.patch = patch;
-    this.context = new (window.AudioContext ||
-      window.webkitAudioContext)();
+    this.context = new (window.AudioContext || window.webkitAudioContext)();
 
     this.gainNode = this.context.createGain();
-    this.gainNode.gain.value = volume;
-
+    
     Object.entries(KEYBOARD).forEach(([note, { frequency }]) => {
       const osc = new OscillatorNode(this.context, {
         frequency,
         detune: this.patch.detune,
         type: this.patch.osc,
       });
+      
+      const gain = this.context.createGain();
+      gain.gain.value = volume;
+      
+      osc.connect(gain);
 
-      osc.connect(this.gainNode);
+      this.voices[note] = {
+        state: "stopped",
+        osc,
+        gain,
+      };
 
-      this.oscillators[note] = osc;
+      osc.start(0);
     });
   }
 
-  play(keys: string[]) {
-    if (this.context.state === "suspended") 
-      this.context.resume();
+  play(key: string) {
+    if (this.context.state === "suspended") this.context.resume();
 
-    keys.forEach((key) => {
-      if (this.oscillators[key] && this.oscillators[key].numberOfInputs) {
-        this.oscillators[key].start();
-      }
-    });
+    const voice = this.voices[key];
+
+    if (voice && voice.state === "stopped") {
+      console.log("PLAYING", key);
+
+      voice.state = "playing";
+      voice.gain.connect(this.context.destination);
+    }
   }
 
-  stop(keys: string[]) {
-    keys.forEach((key) => {
-      this.oscillators[key].stop();
-    });
+  stop(key: string) {
+    const voice = this.voices[key];
+
+    if (voice) {
+      console.log("STOPPING", key);
+
+      voice.state = "stopped";
+      voice.gain.disconnect(this.context.destination);
+    }
   }
 
   changeOscillator(type: OscillatorType) {
-    for (const key in this.oscillators) {
-      this.oscillators[key].type = type;
+    for (const key in this.voices) {
+      this.voices[key].osc.type = type;
     }
   }
 
   changeDetune(cents: number) {
-    for (const key in this.oscillators) {
-      this.oscillators[key].detune.value = cents;
+    for (const key in this.voices) {
+      this.voices[key].osc.detune.value = cents;
     }
   }
 
   changeGain(volume: number) {
-    this.gainNode.gain.value = volume;
+    for (const key in this.voices) {
+      this.voices[key].gain.gain.value = volume;
+    }
   }
 
   setPath(patch: IdentifiedPatch) {
@@ -73,7 +92,12 @@ export class Synth {
   }
 }
 
+// Singleton instance
+let synthInstance: Synth | null = null;
 
+// Function to get the singleton instance
+export const getSynthInstance = (): Synth =>
+  (synthInstance ??= new Synth(INIT_PATCH, DEFAULT_VOLUME));
 
 // /* ios enable sound output */
 // window.addEventListener('touchstart', function(){
@@ -85,4 +109,3 @@ export class Synth {
 //   source.connect(audioContext.destination);
 //   source.start(0);
 // }, false);
-

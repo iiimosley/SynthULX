@@ -1,10 +1,7 @@
 <script lang=ts>
   import { KEYBOARD } from "@/common/keyboard";
-  import { INIT_PATCH } from "@/common/patch";
-  import { Synth } from "@/engines/synth";
+  import { getSynthInstance } from "@/engines/synth";
   import KeyActions from "@/stores/keyboard";
-
-  const synth = new Synth(INIT_PATCH);
 
   let showKeyNames = true;
 </script>
