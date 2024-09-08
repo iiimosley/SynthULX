@@ -1,18 +1,17 @@
 <script lang=ts>
   import { KEYBOARD } from "@/common/keyboard";
-  import { getSynthInstance } from "@/engines/synth";
-  import KeyActions from "@/stores/keyboard";
+  import KeyboardActions from "@/stores/keyboard";
 
   let showKeyNames = true;
 </script>
 
-<svelte:window on:keydown|preventDefault={KeyActions.down} on:keyup|preventDefault={KeyActions.up}/>
+<svelte:window on:keydown|preventDefault={KeyboardActions.down} on:keyup|preventDefault={KeyboardActions.up}/>
 
 <div>
   <div id="keyMap" class="w-synth">
     {#each Object.entries(KEYBOARD) as [key, { isAccidental }]}
       <div id={`key${key}`} 
-        class={(isAccidental ? "flat" : "") + ($KeyActions.has(key) ? isAccidental ? " keyFillFlat" : " keyFill" : "")}
+        class={(isAccidental ? "flat" : "") + ($KeyboardActions.has(key) ? isAccidental ? " keyFillFlat" : " keyFill" : "")}
       >
         {#if showKeyNames}
           <span class={isAccidental ? "offNote" : ""}>

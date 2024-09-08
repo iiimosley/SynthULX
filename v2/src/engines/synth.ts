@@ -11,32 +11,25 @@ declare global {
 export class Synth {
   private patch: IdentifiedPatch;
   private context: AudioContext;
-  private gainNode: GainNode;
-  private voices: Record<
-    string,
-    { state: "playing" | "stopped"; osc: OscillatorNode; gain: GainNode }
-  > = {};
+  private voices: Record<string, { osc: OscillatorNode; gain: GainNode }> = {};
 
   constructor(patch: IdentifiedPatch, volume: number) {
     this.patch = patch;
     this.context = new (window.AudioContext || window.webkitAudioContext)();
 
-    this.gainNode = this.context.createGain();
-    
     Object.entries(KEYBOARD).forEach(([note, { frequency }]) => {
       const osc = new OscillatorNode(this.context, {
         frequency,
         detune: this.patch.detune,
         type: this.patch.osc,
       });
-      
+
       const gain = this.context.createGain();
       gain.gain.value = volume;
-      
+
       osc.connect(gain);
 
       this.voices[note] = {
-        state: "stopped",
         osc,
         gain,
       };
@@ -48,25 +41,11 @@ export class Synth {
   play(key: string) {
     if (this.context.state === "suspended") this.context.resume();
 
-    const voice = this.voices[key];
-
-    if (voice && voice.state === "stopped") {
-      console.log("PLAYING", key);
-
-      voice.state = "playing";
-      voice.gain.connect(this.context.destination);
-    }
+    this.voices[key]?.gain.connect(this.context.destination);
   }
 
   stop(key: string) {
-    const voice = this.voices[key];
-
-    if (voice) {
-      console.log("STOPPING", key);
-
-      voice.state = "stopped";
-      voice.gain.disconnect(this.context.destination);
-    }
+    this.voices[key]?.gain.disconnect(this.context.destination);
   }
 
   changeOscillator(type: OscillatorType) {
