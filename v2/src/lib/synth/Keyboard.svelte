@@ -10,12 +10,12 @@
 
 <div>
   <div id="keyMap" class="w-synth">
-    {#each Object.entries(KEYBOARD) as [key, note]}
+    {#each Object.entries(KEYBOARD) as [key, { isAccidental }]}
       <div id={`key${key}`} 
-        class={(note.includes('#') ? "flat" : "") + ($KeyActions.has(key) ? note.includes('#') ? " keyFillFlat" : " keyFill" : "")}
+        class={(isAccidental ? "flat" : "") + ($KeyActions.has(key) ? isAccidental ? " keyFillFlat" : " keyFill" : "")}
       >
         {#if showKeyNames}
-          <span class={note.includes('#') ? "offNote" : ""}>
+          <span class={isAccidental ? "offNote" : ""}>
             {key.toUpperCase()}
           </span>
         {/if}
