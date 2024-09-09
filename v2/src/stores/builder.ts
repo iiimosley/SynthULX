@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import { type Patch } from "../common/patch";
+import { type Patch } from "@/common/patch";
 
 export const BUILDER_STATES = {
   OSC: "osc",

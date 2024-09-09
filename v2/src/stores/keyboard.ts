@@ -2,7 +2,7 @@ import { writable } from "svelte/store";
 import { KEYBOARD } from "@/common/keyboard";
 import { getSynthInstance } from "@/engines/synth";
 
-const initKeyBoardStore = () => {
+const initializeKeyboardStore = () => {
   const keys = new Set<string>();
 
   const { subscribe, update, set } = writable(keys);
@@ -36,6 +36,6 @@ const initKeyBoardStore = () => {
   };
 };
 
-const KeyboardActions = initKeyBoardStore();
+const KeyboardActions = initializeKeyboardStore();
 
 export default KeyboardActions;

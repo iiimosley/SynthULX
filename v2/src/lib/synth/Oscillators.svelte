@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SOUNDWAVE } from '@/common/soundwaves';
+  import { SynthInstance } from '@/engines/synth';
   import PatchStore from '@/stores/patch';
-  import { SynthInstance } from '../../engines/synth';
 
   const soundwaves = Object.entries(SOUNDWAVE) as [OscillatorType, { title: string }][];
 </script>
