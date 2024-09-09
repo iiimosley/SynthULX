@@ -2,7 +2,6 @@ import type { Envelope } from "./envelope";
 import type { Soundwave } from "./soundwaves";
 
 export interface Patch {
-  name: string;
   detune: number;
   osc: Soundwave;
   amp: Envelope;
@@ -14,19 +13,21 @@ export interface Patch {
 
 export type PatchSet = Record<string, Patch>;
 export type PatchId = keyof PatchSet;
-export type IdentifiedPatch = Patch & { id: PatchId };
+export type IdentifiedPatch = Patch & { id: PatchId, name: string };
+
+export const INIT_AMP_EG = {
+  attack: 0.01,
+  decay: 1,
+  sustain: 1,
+  release: 0.01,
+};
 
 export const INIT_PATCH: IdentifiedPatch = {
   id: "init",
   name: "init",
   detune: 0,
   osc: "sine",
-  amp: {
-    attack: 0.01,
-    decay: 1,
-    sustain: 1,
-    release: 0.01,
-  },
+  amp: INIT_AMP_EG,
   filter: {
     attack: 0.01,
     decay: 1,

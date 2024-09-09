@@ -31,27 +31,6 @@ master.gain.value = 1;
 // start the vco
 vco.start(0);
 
-// Controls
-waveType.onchange = function () {
-  changeWaveType(waveType.value);
-};
-
-Attack.oninput = function () {
-  changeAttack(Attack.value);
-};
-
-Decay.oninput = function () {
-  changeDecay(Decay.value);
-};
-
-Sustain.oninput = function () {
-  changeSustain(Sustain.value);
-};
-
-Release.oninput = function () {
-  changeRelease(Release.value);
-};
-
 addEventListenerBySelector(
   '[name="egMode"]',
   "change",

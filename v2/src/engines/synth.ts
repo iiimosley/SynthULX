@@ -1,6 +1,16 @@
 import { KEYBOARD } from "@/common/keyboard";
-import { INIT_PATCH, type IdentifiedPatch } from "@/common/patch";
-import { DEFAULT_VOLUME, NOMINAL_GAIN } from "@/common/volume";
+import { INIT_PATCH, type IdentifiedPatch, type Patch } from "@/common/patch";
+import { DEFAULT_VOLUME } from "@/common/volume";
+import { type AmplifierNode, type Voice } from "@/common/synth";
+
+////// Terms //////
+// VCO: Voltage Controlled Oscillator -- soundwave generator
+// VCA: Voltage Controlled Amplifier -- soundwave amplitude controller
+// VCF: Voltage Controlled Filter -- soundwave frequency modulation controller
+// EG:  Envelope Generator -- controls the transition of soundwaves from one state to another
+// Voices: aka, polyphony -- the number of notes that can be played simultaneously
+// Patch: a set of parameters that define the sound of the synthesizer
+///////////////////
 
 declare global {
   interface Window {
@@ -8,44 +18,26 @@ declare global {
   }
 }
 
-///// Terms /////
-// VCO: Voltage Controlled Oscillator -- soundwave generator
-// VCA: Voltage Controlled Amplifier -- soundwave amplitude controller
-// VCF: Voltage Controlled Filter -- soundwave frequency modulation controller
-// EG:  Envelope Generator -- controls the transition of soundwaves from one state to another
-// Voices: aka, polyphony -- the number of notes that can be played simultaneously
-// Patch: a set of parameters that define the sound of the synthesizer
-/////////////////
 export class Synth {
-  private patch: IdentifiedPatch;
+  private patch: Patch | IdentifiedPatch;
   private context: AudioContext;
   private output: GainNode;
-  private voices: Record<string, { vco: OscillatorNode; vca: GainNode }> = {};
+  private voices: Record<string, Voice> = {};
 
-  constructor(patch: IdentifiedPatch, volume: number) {
+  constructor(patch: Patch | IdentifiedPatch = INIT_PATCH) {
     this.patch = patch;
     this.context = new (window.AudioContext || window.webkitAudioContext)();
     this.output = this.context.createGain();
     this.output.connect(this.context.destination);
 
     Object.entries(KEYBOARD).forEach(([note, { frequency }]) => {
-      const vco = new OscillatorNode(this.context, {
-        frequency,
-        detune: this.patch.detune,
-        type: this.patch.osc,
-      });
-
-      const vca = this.context.createGain();
-      vca.gain.value = NOMINAL_GAIN;
-
-      vco.connect(vca);
-
-      this.voices[note] = {
-        vco: vco,
-        vca,
-      };
-
+      const vco = this.createOscillator(frequency);
+      const vca = this.createAmplifier();
+      
+      vco.connect(vca.node);
       vco.start();
+
+      this.voices[note] = { vco, vca };
     });
 
     this.output.gain.value = DEFAULT_VOLUME;
@@ -58,11 +50,11 @@ export class Synth {
   play(key: string) {
     if (this.context.state === "suspended") this.context.resume();
 
-    this.voices[key]?.vca.connect(this.output);
+    this.voices[key]?.vca.node.connect(this.output);
   }
 
   stop(key: string) {
-    this.voices[key]?.vca.disconnect(this.output);
+    this.voices[key]?.vca.node.disconnect(this.output);
   }
 
   changeOscillator(type: OscillatorType) {
@@ -78,20 +70,33 @@ export class Synth {
   }
 
   changeOutputVolume(volume: number) {
-    this.output.gain.value = volume
+    this.output.gain.value = volume;
   }
 
-  setPath(patch: IdentifiedPatch) {
+  changePatch(patch: Patch | IdentifiedPatch) {
     this.patch = patch;
   }
+
+  private createOscillator = (frequency: number) =>
+    new OscillatorNode(this.context, {
+      frequency,
+      detune: this.patch.detune,
+      type: this.patch.osc,
+    });
+
+  private createAmplifier = (): AmplifierNode => {
+    const node = this.context.createGain();
+    node.gain.value = DEFAULT_VOLUME;
+
+    return { node, eg: this.patch.amp };
+  };
 }
 
 // Singleton instance
 export let SynthInstance: Synth | null = null;
 
-// Function to get the singleton instance
-export const getSynthInstance = (): Synth =>
-  (SynthInstance ??= new Synth(INIT_PATCH, DEFAULT_VOLUME));
+// Fetch singleton instance
+export const getSynthInstance = (): Synth => (SynthInstance ??= new Synth());
 
 // /* ios enable sound output */
 // window.addEventListener('touchstart', function(){
