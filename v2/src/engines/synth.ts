@@ -1,7 +1,8 @@
 import { KEYBOARD } from "@/common/keyboard";
 import { INIT_PATCH, type IdentifiedPatch, type Patch } from "@/common/patch";
-import { DEFAULT_VOLUME } from "@/common/volume";
+import { DEFAULT_VOLUME, NOMINAL_GAIN } from "@/common/volume";
 import { type AmplifierNode, type Voice } from "@/common/synth";
+import type { Envelope } from "../common/envelope";
 
 ////// Terms //////
 // VCO: Voltage Controlled Oscillator -- soundwave generator
@@ -35,6 +36,7 @@ export class Synth {
       const vca = this.createAmplifier();
       
       vco.connect(vca.node);
+      vca.node.connect(this.output);
       vco.start();
 
       this.voices[note] = { vco, vca };
@@ -50,11 +52,26 @@ export class Synth {
   play(key: string) {
     if (this.context.state === "suspended") this.context.resume();
 
-    this.voices[key]?.vca.node.connect(this.output);
+    const { vca } = this.voices[key];
+
+    let now = this.context.currentTime;
+    vca.node.gain.cancelScheduledValues(0);
+    vca.node.gain.setValueAtTime(0, now);
+    vca.node.gain.linearRampToValueAtTime(1, now + vca.eg.attack);
+    
+    vca.node.gain.linearRampToValueAtTime(
+      vca.eg.sustain,
+      now + vca.eg.attack + vca.eg.decay
+    );
   }
 
   stop(key: string) {
-    this.voices[key]?.vca.node.disconnect(this.output);
+    const { vca } = this.voices[key];
+
+    let now = this.context.currentTime;
+    vca.node.gain.cancelScheduledValues(0);
+    vca.node.gain.setValueAtTime(vca.node.gain.value, now);
+    vca.node.gain.linearRampToValueAtTime(0, now + vca.eg.release);
   }
 
   changeOscillator(type: OscillatorType) {
@@ -73,6 +90,12 @@ export class Synth {
     this.output.gain.value = volume;
   }
 
+  changeAmpEnvelope(eg: Envelope) {
+    for (const key in this.voices) {
+      this.voices[key].vca.eg = eg;
+    }
+  }
+
   changePatch(patch: Patch | IdentifiedPatch) {
     this.patch = patch;
   }
@@ -86,7 +109,7 @@ export class Synth {
 
   private createAmplifier = (): AmplifierNode => {
     const node = this.context.createGain();
-    node.gain.value = DEFAULT_VOLUME;
+    node.gain.value = 0;
 
     return { node, eg: this.patch.amp };
   };

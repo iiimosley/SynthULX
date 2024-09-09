@@ -15,11 +15,16 @@ export type PatchSet = Record<string, Patch>;
 export type PatchId = keyof PatchSet;
 export type IdentifiedPatch = Patch & { id: PatchId, name: string };
 
+
+  // a = 0.1,
+  // d = 0.1, 
+  // r = 0.1,
+  // s = 1,
 export const INIT_AMP_EG = {
-  attack: 0.01,
-  decay: 1,
+  attack: 0.1,
+  decay: 0.1,
   sustain: 1,
-  release: 0.01,
+  release: 0.1,
 };
 
 export const INIT_PATCH: IdentifiedPatch = {

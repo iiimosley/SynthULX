@@ -13,24 +13,22 @@ const initializeKeyboardStore = () => {
       // initialize singleton synth by gesture
       const synth = getSynthInstance();
 
-      if (event.key in KEYBOARD) {
+      if (event.key in KEYBOARD && !keys.has(event.key)) {
         update((k) => k.add(event.key));
-        if (keys.has(event.key)) {
-          synth.play(event.key);
-        }
+        synth.play(event.key);
       }
     },
     up: (event: KeyboardEvent) => {
       // initialize singleton synth by gesture
       const synth = getSynthInstance();
-
-      update((k) => {
-        if (event.key in KEYBOARD) {
+      
+      if (event.key in KEYBOARD) {
+        update((k) => {
           k.delete(event.key);
-          synth.stop(event.key);
-        }
-        return k;
-      });
+          return k;
+        });
+        synth.stop(event.key);
+      }
     },
     reset: () => set(new Set<string>()),
   };
