@@ -6,7 +6,7 @@
 <div>
   <div class="textOver">
     <input
-      on:input={(event) => SynthInstance?.changeGain(event.currentTarget?.valueAsNumber)}
+      on:input={(event) => SynthInstance?.changeOutputVolume(event.currentTarget?.valueAsNumber)}
       type="range"
       class="v-slide"
       name="volume"

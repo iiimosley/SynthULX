@@ -1,6 +1,6 @@
 import { KEYBOARD } from "@/common/keyboard";
 import { INIT_PATCH, type IdentifiedPatch } from "@/common/patch";
-import { DEFAULT_VOLUME } from "@/common/volume";
+import { DEFAULT_VOLUME, NOMINAL_GAIN } from "@/common/volume";
 
 declare global {
   interface Window {
@@ -8,34 +8,47 @@ declare global {
   }
 }
 
+///// Terms /////
+// VCO: Voltage Controlled Oscillator -- soundwave generator
+// VCA: Voltage Controlled Amplifier -- soundwave amplitude controller
+// VCF: Voltage Controlled Filter -- soundwave frequency modulation controller
+// EG:  Envelope Generator -- controls the transition of soundwaves from one state to another
+// Voices: aka, polyphony -- the number of notes that can be played simultaneously
+// Patch: a set of parameters that define the sound of the synthesizer
+/////////////////
 export class Synth {
   private patch: IdentifiedPatch;
   private context: AudioContext;
-  private voices: Record<string, { osc: OscillatorNode; gain: GainNode }> = {};
+  private output: GainNode;
+  private voices: Record<string, { vco: OscillatorNode; vca: GainNode }> = {};
 
   constructor(patch: IdentifiedPatch, volume: number) {
     this.patch = patch;
     this.context = new (window.AudioContext || window.webkitAudioContext)();
+    this.output = this.context.createGain();
+    this.output.connect(this.context.destination);
 
     Object.entries(KEYBOARD).forEach(([note, { frequency }]) => {
-      const osc = new OscillatorNode(this.context, {
+      const vco = new OscillatorNode(this.context, {
         frequency,
         detune: this.patch.detune,
         type: this.patch.osc,
       });
 
-      const gain = this.context.createGain();
-      gain.gain.value = volume;
+      const vca = this.context.createGain();
+      vca.gain.value = NOMINAL_GAIN;
 
-      osc.connect(gain);
+      vco.connect(vca);
 
       this.voices[note] = {
-        osc,
-        gain,
+        vco: vco,
+        vca,
       };
 
-      osc.start(0);
+      vco.start();
     });
+
+    this.output.gain.value = DEFAULT_VOLUME;
   }
 
   get currentOsc() {
@@ -45,29 +58,27 @@ export class Synth {
   play(key: string) {
     if (this.context.state === "suspended") this.context.resume();
 
-    this.voices[key]?.gain.connect(this.context.destination);
+    this.voices[key]?.vca.connect(this.output);
   }
 
   stop(key: string) {
-    this.voices[key]?.gain.disconnect(this.context.destination);
+    this.voices[key]?.vca.disconnect(this.output);
   }
 
   changeOscillator(type: OscillatorType) {
     for (const key in this.voices) {
-      this.voices[key].osc.type = type;
+      this.voices[key].vco.type = type;
     }
   }
 
   changeDetune(cents: number) {
     for (const key in this.voices) {
-      this.voices[key].osc.detune.value = cents;
+      this.voices[key].vco.detune.value = cents;
     }
   }
 
-  changeGain(volume: number) {
-    for (const key in this.voices) {
-      this.voices[key].gain.gain.value = volume;
-    }
+  changeOutputVolume(volume: number) {
+    this.output.gain.value = volume
   }
 
   setPath(patch: IdentifiedPatch) {
