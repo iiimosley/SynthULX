@@ -1,7 +1,7 @@
 import { KEYBOARD } from "@/common/keyboard";
 import { INIT_PATCH, type IdentifiedPatch, type Patch } from "@/common/patch";
-import { DEFAULT_VOLUME, NOMINAL_GAIN } from "@/common/volume";
-import { type AmplifierNode, type Voice } from "@/common/synth";
+import { DEFAULT_VOLUME } from "@/common/volume";
+import { type Voice } from "@/common/synth";
 import type { Envelope } from "../common/envelope";
 
 ////// Terms //////

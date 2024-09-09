@@ -1,8 +1,12 @@
-<script>
+<script lang=ts>
   import PatchStore from "@/stores/patch";
   import { SynthInstance } from "../../engines/synth";
 
-  const { amp } = SynthInstance ?? $PatchStore;
+  let { attack, decay, sustain, release } = SynthInstance?.amp ?? $PatchStore?.amp;
+
+  const updateAmp = () => {
+    SynthInstance?.changeAmpEnvelope({attack, decay, sustain, release});
+  };
 </script>
 
 <div id="ampEG">
@@ -14,7 +18,8 @@
     min="0.01"
     max="3"
     step="0.01"
-    value={amp.attack}
+    bind:value={attack}
+    on:input={updateAmp}
   />
   <input
     type="range"
@@ -23,7 +28,8 @@
     min="0.01"
     max="1"
     step="0.01"
-    value={amp.decay}
+    bind:value={decay}
+    on:input={updateAmp}
   />
   <input
     type="range"
@@ -32,7 +38,8 @@
     min="0.01"
     max="1"
     step="0.01"
-    value={amp.sustain}
+    bind:value={sustain}
+    on:input={updateAmp}
   />
   <input
     type="range"
@@ -41,7 +48,8 @@
     min="0.01"
     max="4.5"
     step="0.01"
-    value={amp.release}
+    bind:value={release}
+    on:input={updateAmp}
   />
   <div>
     <label for="amp-attack">A</label>
