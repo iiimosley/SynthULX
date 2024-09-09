@@ -38,6 +38,10 @@ export class Synth {
     });
   }
 
+  get currentOsc() {
+    return this.patch.osc;
+  }
+
   play(key: string) {
     if (this.context.state === "suspended") this.context.resume();
 
@@ -72,11 +76,11 @@ export class Synth {
 }
 
 // Singleton instance
-let synthInstance: Synth | null = null;
+export let SynthInstance: Synth | null = null;
 
 // Function to get the singleton instance
 export const getSynthInstance = (): Synth =>
-  (synthInstance ??= new Synth(INIT_PATCH, DEFAULT_VOLUME));
+  (SynthInstance ??= new Synth(INIT_PATCH, DEFAULT_VOLUME));
 
 // /* ios enable sound output */
 // window.addEventListener('touchstart', function(){
