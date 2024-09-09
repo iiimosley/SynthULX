@@ -1,8 +1,8 @@
 <script lang=ts>
+  import { SynthInstance } from "@/engines/synth";
   import PatchStore from "@/stores/patch";
-  import { SynthInstance } from "../../engines/synth";
 
-  let amp = SynthInstance?.amp ?? $PatchStore?.amp;
+  let { amp } = SynthInstance ?? $PatchStore;
 
   const updateAmp = () => {
     SynthInstance?.changeAmpEnvelope(amp);
