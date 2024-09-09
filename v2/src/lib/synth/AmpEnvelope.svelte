@@ -2,10 +2,10 @@
   import PatchStore from "@/stores/patch";
   import { SynthInstance } from "../../engines/synth";
 
-  let { attack, decay, sustain, release } = SynthInstance?.amp ?? $PatchStore?.amp;
+  let amp = SynthInstance?.amp ?? $PatchStore?.amp;
 
   const updateAmp = () => {
-    SynthInstance?.changeAmpEnvelope({attack, decay, sustain, release});
+    SynthInstance?.changeAmpEnvelope(amp);
   };
 </script>
 
@@ -18,7 +18,7 @@
     min="0.01"
     max="3"
     step="0.01"
-    bind:value={attack}
+    bind:value={amp.attack}
     on:input={updateAmp}
   />
   <input
@@ -28,7 +28,7 @@
     min="0.01"
     max="1"
     step="0.01"
-    bind:value={decay}
+    bind:value={amp.decay}
     on:input={updateAmp}
   />
   <input
@@ -38,7 +38,7 @@
     min="0.01"
     max="1"
     step="0.01"
-    bind:value={sustain}
+    bind:value={amp.sustain}
     on:input={updateAmp}
   />
   <input
@@ -48,7 +48,7 @@
     min="0.01"
     max="4.5"
     step="0.01"
-    bind:value={release}
+    bind:value={amp.release}
     on:input={updateAmp}
   />
   <div>
