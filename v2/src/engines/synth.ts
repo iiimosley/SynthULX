@@ -32,11 +32,17 @@ export class Synth {
     this.output.connect(this.context.destination);
 
     Object.entries(KEYBOARD).forEach(([note, { frequency }]) => {
-      const vco = this.createOscillator(frequency);
-      const vca = this.createAmplifier();
+      const vco = new OscillatorNode(this.context, {
+        frequency,
+        detune: this.patch.detune,
+        type: this.patch.osc,
+      });
+
+      const vca = this.context.createGain();
+      vca.gain.value = 0;
       
-      vco.connect(vca.node);
-      vca.node.connect(this.output);
+      vco.connect(vca);
+      vca.connect(this.output);
       vco.start();
 
       this.voices[note] = { vco, vca };
@@ -49,29 +55,32 @@ export class Synth {
     return this.patch.osc;
   }
 
+  get amp() {
+    return this.patch.amp;
+  }
+
   play(key: string) {
     if (this.context.state === "suspended") this.context.resume();
 
     const { vca } = this.voices[key];
+    const { attack, decay, sustain } = this.patch.amp;
 
     let now = this.context.currentTime;
-    vca.node.gain.cancelScheduledValues(0);
-    vca.node.gain.setValueAtTime(0, now);
-    vca.node.gain.linearRampToValueAtTime(1, now + vca.eg.attack);
+    vca.gain.cancelScheduledValues(0);
+    vca.gain.setValueAtTime(0, now);
+    vca.gain.linearRampToValueAtTime(1, now + attack);
     
-    vca.node.gain.linearRampToValueAtTime(
-      vca.eg.sustain,
-      now + vca.eg.attack + vca.eg.decay
-    );
+    vca.gain.linearRampToValueAtTime(sustain, now + attack + decay);
   }
 
   stop(key: string) {
     const { vca } = this.voices[key];
+    const { release } = this.patch.amp;
 
     let now = this.context.currentTime;
-    vca.node.gain.cancelScheduledValues(0);
-    vca.node.gain.setValueAtTime(vca.node.gain.value, now);
-    vca.node.gain.linearRampToValueAtTime(0, now + vca.eg.release);
+    vca.gain.cancelScheduledValues(0);
+    vca.gain.setValueAtTime(vca.gain.value, now);
+    vca.gain.linearRampToValueAtTime(0, now + release);
   }
 
   changeOscillator(type: OscillatorType) {
@@ -91,28 +100,12 @@ export class Synth {
   }
 
   changeAmpEnvelope(eg: Envelope) {
-    for (const key in this.voices) {
-      this.voices[key].vca.eg = eg;
-    }
+    this.patch.amp = eg;
   }
 
   changePatch(patch: Patch | IdentifiedPatch) {
     this.patch = patch;
   }
-
-  private createOscillator = (frequency: number) =>
-    new OscillatorNode(this.context, {
-      frequency,
-      detune: this.patch.detune,
-      type: this.patch.osc,
-    });
-
-  private createAmplifier = (): AmplifierNode => {
-    const node = this.context.createGain();
-    node.gain.value = 0;
-
-    return { node, eg: this.patch.amp };
-  };
 }
 
 // Singleton instance

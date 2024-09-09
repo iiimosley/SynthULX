@@ -1,5 +1,8 @@
 <script>
   import PatchStore from "@/stores/patch";
+  import { SynthInstance } from "../../engines/synth";
+
+  const { amp } = SynthInstance ?? $PatchStore;
 </script>
 
 <div id="ampEG">
@@ -11,7 +14,7 @@
     min="0.01"
     max="3"
     step="0.01"
-    value={$PatchStore.amp.attack}
+    value={amp.attack}
   />
   <input
     type="range"
@@ -20,7 +23,7 @@
     min="0.01"
     max="1"
     step="0.01"
-    value={$PatchStore.amp.decay}
+    value={amp.decay}
   />
   <input
     type="range"
@@ -29,7 +32,7 @@
     min="0.01"
     max="1"
     step="0.01"
-    value={$PatchStore.amp.sustain}
+    value={amp.sustain}
   />
   <input
     type="range"
@@ -38,7 +41,7 @@
     min="0.01"
     max="4.5"
     step="0.01"
-    value={$PatchStore.amp.release}
+    value={amp.release}
   />
   <div>
     <label for="amp-attack">A</label>
