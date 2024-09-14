@@ -1,0 +1,855 @@
+// vars
+$synthWidth: 63%;
+$keyBorder: 0.3vw double white;
+$rangeLabel: 2.1vw;
+$sineColor: blue;
+$triangleColor: rgb(255, 217, 1);
+$squareColor: green;
+$sawtoothColor: red;
+
+// mixins
+@mixin waveTitle($waveColor) {
+  margin: 0.8em;
+  font-size: 2.2em;
+  color: white;
+  text-shadow: 0 0 0.2vw black, 0 0 0.8vw $waveColor;
+}
+
+@mixin oscScope($thisImage, $thisColor) {
+  display: inline-block;
+  height: 6vw;
+  width: 35vw;
+  margin: 0.8vw;
+  border: 0.1vw solid black;
+  background: url($thisImage), $thisColor;
+  background-size: auto 100%;
+  background-repeat: repeat-x;
+  background-position: 0 0;
+}
+
+@mixin modal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(61, 61, 61, 0.836);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+@mixin modalContent {
+  position: relative;
+  margin: auto;
+  padding: 2vw;
+  height: auto;
+  border-radius: 1em;
+  color: rgb(51, 51, 51);
+  background: white;
+  box-shadow: 0 0 6vw black;
+}
+
+@mixin closeChip {
+  position: absolute;
+  display: inline-block;
+  left: 90%;
+  top: 10%;
+  font-size: 3vw;
+  color: rgb(49, 49, 49);
+  border-radius: 50%;
+  &:hover {
+    color: rgb(2, 2, 122);
+    cursor: pointer;
+    &:active {
+      color: gold;
+      text-shadow: 0 0 2vw rgb(82, 81, 81);
+    }
+  }
+}
+
+///globals
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  background: rgb(34, 34, 34);
+  font-family: "Fira Sans Condensed", Helvetica, cursive;
+  color: snow;
+}
+
+h1,
+h3 {
+  margin: 1em auto;
+  text-align: center;
+}
+
+input[type="range"] {
+  writing-mode: bt-lr;
+  appearance: slider-vertical;
+  -webkit-appearance: slider-vertical;
+  width: $rangeLabel;
+  height: 8em;
+  transition: all 0.2s;
+  &:focus {
+    outline: none;
+  }
+}
+
+.v-slide {
+  writing-mode: vertical-lr;
+  direction: rtl;
+}
+
+.textOver {
+  display: inline-block;
+  margin: auto 0.4vw;
+  > * {
+    display: block;
+  }
+  label {
+    width: initial !important;
+    font-size: 0.8em;
+    margin-top: 0.6em;
+  }
+  input[type="range"] {
+    margin: auto;
+  }
+}
+
+/// selectors
+
+#nav {
+  background: white;
+  color: rgb(42, 42, 94);
+  border-bottom: 0.3vw double gold;
+  overflow: hidden;
+  transition: all 0.2s;
+  > div {
+    display: inline-block;
+    border-left: 0.1vw solid navy;
+    border-right: 0.1vw solid navy;
+    transition: all 0.2s;
+    &:hover {
+      background: rgb(209, 167, 59);
+      cursor: pointer;
+    }
+    > a {
+      display: inline-block;
+      padding: 1.3vw 4vw;
+      &:hover {
+        color: snow;
+      }
+    }
+  }
+  #patchDrop {
+    display: none;
+    position: absolute;
+    z-index: 7;
+    background: rgba(255, 250, 250, 0.959);
+    box-shadow: 0 0.7vw 1vw darkslategray;
+    margin-top: 0.3vw;
+    .patchSelect {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s;
+      > a {
+        display: inline-block;
+        padding: 0.7vw 1.8vw 0.7vw 0.7vw;
+        width: 95%;
+        color: inherit;
+        text-decoration: none;
+      }
+      &:hover {
+        color: seashell;
+        background: #cc5500;
+        text-shadow: 0 0 0.2vw snow, 0 0 0.4vw cornflowerblue;
+      }
+    }
+    .deleteChip {
+      // text-align: right;
+      font-size: 1.6em;
+      margin: 0 0.3em;
+      &:hover {
+        color: rgb(214, 1, 1);
+        text-shadow: 0 0 0.3vw goldenrod;
+      }
+    }
+  }
+}
+
+//modals
+
+#eduModal {
+  @include modal;
+  padding-top: 4vw;
+  #eduWrap {
+    @include modalContent;
+    width: 80%;
+    main {
+      float: left;
+      text-align: center;
+    }
+    aside {
+      float: right;
+      text-align: right;
+      margin-right: 3vw;
+    }
+    canvas {
+      display: block;
+    }
+    label {
+      display: inline-block;
+      text-align: center;
+      width: $rangeLabel;
+    }
+    h2 {
+      text-align: center;
+    }
+    #oscAlert {
+      position: absolute;
+      display: none;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgb(155, 216, 238);
+      border-radius: 1em;
+      box-shadow: 0 0 3vw lightblue;
+      h2 {
+        margin: 18vw auto;
+        font-size: 3em;
+        letter-spacing: 0.05em;
+        color: snow;
+      }
+    }
+    #oscView {
+      main {
+        width: 40%;
+        h1 {
+          width: 70%;
+          margin: 1.3vw auto;
+          // border-bottom: .2vw solid black;
+        }
+        p:first-of-type {
+          margin: 1.1vw auto 4vw;
+        }
+        p {
+          margin: 2vw auto;
+          width: 70%;
+        }
+        #sineTitle {
+          @include waveTitle($sineColor);
+        }
+        #triangleTitle {
+          @include waveTitle($triangleColor);
+        }
+        #squareTitle {
+          @include waveTitle($squareColor);
+        }
+        #sawtoothTitle {
+          @include waveTitle($sawtoothColor);
+        }
+        h4 > span {
+          color: darkgreen;
+          text-shadow: 0 0 0.2vw rgb(255, 230, 91);
+        }
+      }
+      aside {
+        width: 55%;
+        > div {
+          display: flex;
+          justify-content: space-between;
+          margin: 0.8vw;
+          transition: all 0.1s;
+          button {
+            display: inline-block;
+            padding: 0;
+            width: 6vw;
+            height: 6vw;
+            margin: 0.8vw;
+            border-radius: 0.7em;
+            cursor: pointer;
+            &:focus {
+              outline: none;
+            }
+            &:hover {
+              background: linear-gradient(45deg, rgb(235, 233, 233), snow);
+            }
+            div {
+              border: 0.1vw solid black;
+              margin: auto;
+              width: 60%;
+              height: 60%;
+              // box-shadow: 0 0 .3vw;
+            }
+          }
+          #startSine > div {
+            border-radius: 50%;
+            background: $sineColor;
+          }
+          #startTriangle > div {
+            width: 0;
+            height: 0;
+            border-top: none;
+            border-left: 2vw solid transparent;
+            border-right: 2vw solid transparent;
+            border-bottom: 4vw solid $triangleColor;
+          }
+          #startSquare > div {
+            background: $squareColor;
+          }
+          #startSawtooth > div {
+            width: 0;
+            height: 0;
+            border-top: none;
+            border-left: 4vw solid transparent;
+            border-bottom: 4vw solid $sawtoothColor;
+          }
+          #sineAnimate {
+            @include oscScope("../images/sine-alpha.png", $sineColor);
+          }
+          #triangleAnimate {
+            @include oscScope("../images/triangle-alpha.png", $triangleColor);
+          }
+          #squareAnimate {
+            @include oscScope("../images/square-alpha.png", $squareColor);
+          }
+          #sawtoothAnimate {
+            @include oscScope("../images/sawtooth-alpha.png", $sawtoothColor);
+          }
+        }
+      }
+      .oscSelect {
+        border: 0.2vw solid rgb(0, 113, 151);
+        border-radius: 0.3em;
+        box-shadow: 0 0 0.4vw darkslategray;
+      }
+      .oscAnimate {
+        animation: oscAnimate 5s linear infinite;
+      }
+    }
+    #ampView,
+    #filterEGView {
+      main {
+        width: 50%;
+        #ampDetail,
+        #filterDetail {
+          width: 70%;
+          margin: 2vw auto;
+        }
+        p {
+          margin: 2vw auto;
+        }
+      }
+      aside {
+        width: 40%;
+        div {
+          margin: 3vw auto;
+          padding: 0.5vw;
+        }
+        canvas {
+          border: 0.3vw double black;
+          transform: scale(1.3);
+          width: 80%;
+          height: auto;
+        }
+      }
+    }
+    #cutoffWrap {
+      main {
+        width: 50%;
+        h1 {
+          margin: 0.2em auto;
+        }
+        h3 {
+          margin: 0.2vw auto;
+        }
+        p {
+          margin: 1.1vw auto;
+          width: 70%;
+          .detail {
+            font-size: 0.7em;
+          }
+        }
+      }
+      aside {
+        width: 40%;
+        div {
+          margin: 4vw auto;
+          padding: 0.5vw;
+        }
+        canvas {
+          margin: auto;
+          border: 0.3vw double black;
+          transform: scale(1.3);
+          width: 80%;
+        }
+      }
+    }
+    .continueSection {
+      clear: both;
+      text-align: right;
+      span {
+        display: inline-block;
+        padding: 1.3vw;
+        color: white;
+        margin-top: 1vw;
+        margin-right: 3vw;
+        background: blue;
+        border-radius: 0.8vw;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+    .spacebarEvent {
+      height: 10%;
+      width: 80%;
+      border: 0.1vw solid black;
+      border-radius: 0.7vw;
+      box-shadow: 0 0.5vw 0.3vw darkslategrey;
+      transition: all 0.1s;
+      p {
+        margin: 1.1em auto;
+      }
+    }
+    .spacebarAnimate {
+      animation: spacePress 1.2s linear 2;
+    }
+    .pressingSpace {
+      background: linear-gradient(13deg, rgb(66, 255, 255), rgb(255, 255, 234));
+      transform: translateY(0.2vw);
+      box-shadow: 0 0.1vw black;
+    }
+    .closeChip {
+      @include closeChip;
+      left: 95%;
+      top: 3%;
+    }
+    .note {
+      margin: 0.4vw;
+      font-size: 0.6em;
+    }
+  }
+}
+
+#completeModal {
+  @include modal;
+  padding-top: 10vw;
+  #buildComplete {
+    @include modalContent;
+    width: 40%;
+    h2 {
+      margin: 3vw auto;
+      text-align: center;
+    }
+  }
+}
+
+#editModal,
+#saveModal,
+#deleteModal {
+  @include modal;
+  padding-top: 10vw;
+  .patchModal {
+    @include modalContent;
+    width: 40%;
+    .modalContent {
+      margin: 3vw auto;
+      text-align: center;
+      width: 80%;
+      > * {
+        display: block;
+        margin: 2vw auto;
+      }
+      h2 {
+        margin-bottom: 3vw;
+      }
+    }
+    h2 {
+      margin-bottom: 3vw auto;
+      text-align: center;
+    }
+    a {
+      padding: 1vw 2vw;
+      color: white;
+      text-decoration: none;
+      background: blue;
+      border-radius: 0.8vw;
+      width: 50%;
+      letter-spacing: 0.2em;
+      transition: all 0.3s;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    #savePatch {
+      background: $sineColor;
+      &:hover {
+        box-shadow: inset 0 0 0.7vw 0.2vw rgba(1, 1, 66, 0.582),
+          inset 0 0 1vw rgb(2, 2, 109);
+      }
+    }
+    #editPatch {
+      background: $squareColor;
+      &:hover {
+        box-shadow: inset 0 0 0.7vw 0.2vw rgb(9, 104, 9),
+          inset 0 0 1vw rgb(6, 99, 6);
+      }
+    }
+    #deletePatch {
+      background: $sawtoothColor;
+      &:hover {
+        box-shadow: inset 0 0 0.7vw 0.2vw rgb(128, 19, 0),
+          inset 0 0 1vw rgb(122, 33, 17);
+      }
+    }
+    input,
+    select {
+      font-family: inherit;
+      font-size: 1.3em;
+    }
+    input[type="checkbox"] {
+      margin-left: 0.3em;
+      cursor: pointer;
+    }
+    .closeChip {
+      position: absolute;
+      display: inline-block;
+      left: 90%;
+      top: 10%;
+      font-size: 3vw;
+      color: rgb(49, 49, 49);
+      border-radius: 50%;
+      &:hover {
+        color: rgb(2, 2, 122);
+        cursor: pointer;
+        &:active {
+          color: gold;
+          text-shadow: 0 0 2vw rgb(82, 81, 81);
+        }
+      }
+    }
+  }
+}
+
+#registerModal {
+  @include modal;
+  padding-top: 5vw;
+  #registerContent {
+    @include modalContent;
+    padding: 2vw 3vw;
+    width: 40%;
+    h1 {
+      text-align: left;
+      font-weight: 200;
+      font-size: 3.5em;
+      margin: 1vw auto 2vw;
+    }
+    h3 {
+      letter-spacing: 0.1em;
+    }
+    p {
+      width: 80%;
+      margin: 1.5vw auto;
+    }
+    i {
+      background: linear-gradient(90deg, darkblue, rgb(167, 25, 0));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 400;
+    }
+    #chromeMsg {
+      font-weight: bold;
+      letter-spacing: 0.05em;
+    }
+    a:not(.autoPlayMsg) {
+      display: block;
+      width: 70%;
+      margin: 2vw auto;
+      padding: 0.8vw 1.8vw;
+      font-size: 1em;
+      font-family: "Futura", Helvetica, sans-serif;
+      font-weight: 250;
+      text-align: center;
+      letter-spacing: 0.2em;
+      color: white;
+      border: none;
+      border-radius: 0.7vw;
+      outline: none;
+      transition: all 0.3s;
+      img {
+        display: inline-block;
+        width: 3.4vw;
+        margin-left: 1vw;
+        filter: drop-shadow(0 0 0.07vw snow);
+      }
+      &:hover {
+        cursor: pointer;
+        letter-spacing: 0.18em;
+      }
+    }
+    #promptLogin {
+      background: rgb(25, 25, 180);
+      &:hover {
+        background: rgb(1, 1, 255);
+        box-shadow: inset 0 0 0.3vw silver, 0 0 0.3vw rgb(1, 1, 255),
+          0 0 1vw gold;
+      }
+    }
+    #promptGuest {
+      background: rgb(1, 109, 1);
+      &:hover {
+        background: green;
+        box-shadow: inset 0 0 0.3vw snow, 0 0 0.3vw snow;
+      }
+    }
+  }
+}
+
+.attention {
+  color: red;
+  text-shadow: 0 0 0.3vw gold;
+}
+
+///synth param container
+#synthWrap {
+  position: relative;
+  margin: 2vw auto 0;
+  padding: 1.7vw 0;
+  border: $keyBorder;
+  border-radius: 0.9em 0.9em 0 0;
+  background: repeating-radial-gradient(
+    circle at left bottom,
+    rgb(34, 34, 34),
+    rgba(95, 95, 95, 0.247) 6vw
+  );
+  #brand {
+    position: absolute;
+    top: 3%;
+    left: 3%;
+    margin: 0;
+    font-family: "Exo", Helvetica, sans-serif;
+    font-weight: 200;
+    font-style: italic;
+    font-size: 1.8em;
+    letter-spacing: 0.2em;
+    transform: skewX(170deg);
+    background: linear-gradient(270deg, rgb(126, 126, 145), gold);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  > div {
+    display: inline-block;
+    margin: 0.3vw;
+    // border: .2vw solid white;
+    padding: 1vw;
+    h4 {
+      margin: 0.8vw auto;
+      padding-bottom: 0.2vw;
+      text-align: center;
+      letter-spacing: 0.1vw;
+      border-bottom: 0.1vw solid white;
+    }
+  }
+  label {
+    display: inline-block;
+    text-align: center;
+    width: $rangeLabel;
+  }
+  #oscType {
+    text-align: right;
+    label {
+      display: inline-block;
+      text-align: left;
+      width: initial;
+    }
+  }
+}
+
+#keyMap {
+  position: relative;
+  font-size: 0;
+  margin: 1em auto;
+  padding-bottom: 0.1vw;
+  height: 20vw;
+  border-top: $keyBorder;
+  border-right: $keyBorder;
+  border-left: $keyBorder;
+  div {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    width: 8.97%;
+    height: 100%;
+    background: white;
+    // border: .1vw solid black;
+    border-radius: 0 0 1.3vw 1.3vw;
+    &:not(:last-child) {
+      margin-right: 0.13%;
+    }
+    span {
+      display: inline-block;
+      font-size: 3vw;
+      color: gold;
+      text-shadow: 0 0 0.1vw rgb(0, 0, 56), 0 0 0.2vw rgb(0, 0, 56);
+      margin: 4.5em auto 0 auto;
+      width: 100%;
+      text-align: center;
+      z-index: 18;
+    }
+    .offNote {
+      margin: 3em auto 0 auto;
+      font-size: 2.4vw;
+    }
+  }
+  .flat {
+    z-index: 2;
+    position: absolute;
+    margin-left: -1.3vw;
+    width: 2.4vw;
+    height: 12vw;
+    background: black;
+  }
+  .keyFill {
+    background: linear-gradient(
+      45deg,
+      goldenrod,
+      rgb(138, 171, 214)
+    ) !important;
+  }
+  .keyFillFlat {
+    background: linear-gradient(
+      76deg,
+      rgb(90, 37, 43) 42%,
+      rgb(107, 206, 194)
+    ) !important;
+  }
+}
+
+#keyCheck {
+  margin: 1em auto;
+  text-align: center;
+  width: 50%;
+  label {
+    text-shadow: 0 0 darkorange;
+    animation: 2s linear 3 glowNotice;
+  }
+  sup {
+    font-size: 0.65em;
+    color: rgb(211, 255, 124);
+    margin: 0 0.4vw;
+  }
+}
+
+#userTools {
+  display: inline-block;
+  margin: 1em auto;
+  button {
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1em;
+    margin-left: 2vw;
+    padding: 0.3vw 2vw;
+    border-radius: 0.3em;
+    transition: box-shadow 0.2s;
+    &:hover {
+      box-shadow: 0 0 1vw darkorange;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+////preset patches (radio buttons)
+#patchWrap {
+  margin: 2em auto;
+  padding: 1em;
+  width: 30%;
+  border: 0.4vw groove oldlace;
+  text-align: center;
+  h3 {
+    display: block;
+    width: 40%;
+    padding-bottom: 0.4vw;
+    letter-spacing: 0.2vw;
+    border-bottom: 0.1vw solid white;
+  }
+}
+
+#patchBtns {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  margin: 1.3vw auto;
+}
+
+@keyframes glowNotice {
+  0% {
+    text-shadow: 0 0 darkorange;
+  }
+  20% {
+    text-shadow: 0 0 1vw darkorange, 0 0 2vw gold;
+  }
+  40% {
+    text-shadow: 0 0 darkorange;
+  }
+  60% {
+    text-shadow: 0 0 1vw darkorange, 0 0 2vw gold;
+  }
+  80% {
+    text-shadow: 0 0 darkorange;
+  }
+  90% {
+    text-shadow: 0 0 darkorange;
+  }
+  100% {
+    text-shadow: 0 0 darkorange;
+  }
+}
+
+@keyframes oscAnimate {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 3000px 0;
+  }
+}
+
+@keyframes spacePress {
+  0% {
+    box-shadow: 0 0.5vw 0.3vw darkslategrey;
+  }
+  20% {
+    transform: translateY(0.2vw);
+    box-shadow: 0 0.1vw black;
+  }
+  40% {
+    transform: translateY(0);
+    box-shadow: 0 0.5vw 0.3vw darkslategrey;
+  }
+  60% {
+    transform: translateY(0.2vw);
+    box-shadow: 0 0.1vw black;
+  }
+  80% {
+    transform: translateY(0);
+    box-shadow: 0 0.5vw 0.3vw darkslategrey;
+  }
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 0.5vw 0.3vw darkslategrey;
+  }
+}
