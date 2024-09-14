@@ -1,7 +1,8 @@
+import type { FilterCutoff } from "@/common/filter";
 import { KEYBOARD } from "@/common/keyboard";
 import { INIT_PATCH, type IdentifiedPatch, type Patch } from "@/common/patch";
-import { DEFAULT_VOLUME } from "@/common/volume";
 import { type Voice } from "@/common/synth";
+import { DEFAULT_VOLUME } from "@/common/volume";
 import type { Envelope } from "../common/envelope";
 
 ////// Terms //////
@@ -38,14 +39,20 @@ export class Synth {
         type: this.patch.osc,
       });
 
+      const vcf = this.context.createBiquadFilter();
+      vcf.type = "lowpass";
+      vcf.frequency.value = this.patch.filter.frequency;
+      vcf.Q.value = this.patch.filter.resonance;
+
       const vca = this.context.createGain();
       vca.gain.value = 0;
-      
-      vco.connect(vca);
+
+      vco.connect(vcf);
+      vcf.connect(vca);
       vca.connect(this.output);
       vco.start();
 
-      this.voices[note] = { vco, vca };
+      this.voices[note] = { vco, vca, vcf };
     });
 
     this.output.gain.value = DEFAULT_VOLUME;
@@ -59,6 +66,10 @@ export class Synth {
     return this.patch.amp;
   }
 
+  get filter() {
+    return this.patch.filter;
+  }
+
   play(key: string) {
     if (this.context.state === "suspended") this.context.resume();
 
@@ -66,11 +77,11 @@ export class Synth {
     const { attack, decay, sustain } = this.patch.amp;
 
     vca.gain.cancelScheduledValues(0);
-    
+
     const now = this.context.currentTime;
     vca.gain.setValueAtTime(0, now);
     vca.gain.linearRampToValueAtTime(1, now + attack);
-    
+
     vca.gain.linearRampToValueAtTime(sustain, now + attack + decay);
   }
 
@@ -86,13 +97,17 @@ export class Synth {
     vca.gain.linearRampToValueAtTime(0, now + release);
   }
 
-  changeOscillator(type: OscillatorType) {
+  changeOscillator(type: Exclude<OscillatorType, "custom">) {
+    this.patch.osc = type;
+
     for (const key in this.voices) {
-      this.voices[key].vco.type = type;
+      this.voices[key].vco.type = this.patch.osc;
     }
   }
 
   changeDetune(cents: number) {
+    this.patch.detune = cents;
+
     for (const key in this.voices) {
       this.voices[key].vco.detune.value = cents;
     }
@@ -104,6 +119,22 @@ export class Synth {
 
   changeAmpEnvelope(eg: Envelope) {
     this.patch.amp = eg;
+  }
+
+  changeFilterCutoff(cutoff: FilterCutoff) {
+    this.changeFilter(cutoff);
+
+    for (const key in this.voices) {
+      this.voices[key].vcf.frequency.value = this.patch.filter.frequency;
+      this.voices[key].vcf.Q.value = this.patch.filter.resonance;
+    }
+  }
+
+  changeFilter(filter: FilterCutoff | Envelope) {
+    this.patch.filter = {
+      ...this.patch.filter,
+      ...filter,
+    };
   }
 
   changePatch(patch: Patch | IdentifiedPatch) {

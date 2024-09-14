@@ -1,5 +1,12 @@
-<script>
+<script lang=ts>
+  import { SynthInstance } from "@/engines/synth";
   import PatchStore from "@/stores/patch";
+
+  let { filter } = SynthInstance ?? $PatchStore;
+
+  const updateFilterCutoff = () => {
+    SynthInstance?.changeFilterCutoff(filter);
+  };
 </script>
 
 <div id="filter">
@@ -12,9 +19,10 @@
       min="100"
       max="8000"
       step="10"
-      value={$PatchStore.filter.cutoff}
+      bind:value={filter.frequency}
+      on:input={updateFilterCutoff}
     />
-    <label for="filter-cutoff">Cutoff</label>
+    <label for="filter-cutoff">Frequency</label>
   </div>
   <div class="textOver">
     <input
@@ -24,7 +32,8 @@
       min="0"
       max="18"
       step="1"
-      value={$PatchStore.filter.resonance}
+      value={filter.resonance}
+      on:input={updateFilterCutoff}
     />
     <label for="filter-resonance">Resonance</label>
   </div>

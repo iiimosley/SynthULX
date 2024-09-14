@@ -1,3 +1,4 @@
+import type { FilterCutoff } from "@/common/filter";
 import type { Envelope } from "./envelope";
 import type { Soundwave } from "./soundwaves";
 
@@ -5,10 +6,7 @@ export interface Patch {
   detune: number;
   osc: Soundwave;
   amp: Envelope;
-  filter: Envelope & {
-    cutoff: number;
-    resonance: number;
-  };
+  filter: Envelope & FilterCutoff;
 }
 
 export type PatchSet = Record<string, Patch>;
@@ -38,7 +36,7 @@ export const INIT_PATCH: IdentifiedPatch = {
     decay: 1,
     sustain: 1,
     release: 1,
-    cutoff: 300,
+    frequency: 300,
     resonance: 0,
   },
 };
@@ -60,7 +58,7 @@ export const DEFAULT_PATCHES: IdentifiedPatch[] = [
       decay: 1,
       sustain: 1,
       release: 1.65,
-      cutoff: 740,
+      frequency: 740,
       resonance: 5,
     },
   },
@@ -80,7 +78,7 @@ export const DEFAULT_PATCHES: IdentifiedPatch[] = [
       decay: 0.69,
       sustain: 1,
       release: 2.34,
-      cutoff: 710,
+      frequency: 710,
       resonance: 0,
     },
   },
@@ -100,7 +98,7 @@ export const DEFAULT_PATCHES: IdentifiedPatch[] = [
       decay: 0.01,
       sustain: 0.01,
       release: 1.42,
-      cutoff: 780,
+      frequency: 780,
       resonance: 6,
     },
   },
@@ -120,7 +118,7 @@ export const DEFAULT_PATCHES: IdentifiedPatch[] = [
       decay: 1,
       sustain: 1,
       release: 2.44,
-      cutoff: 680,
+      frequency: 680,
       resonance: 10,
     },
   },
