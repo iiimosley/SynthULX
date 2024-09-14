@@ -73,28 +73,44 @@ export class Synth {
   play(key: string) {
     if (this.context.state === "suspended") this.context.resume();
 
-    const { vca } = this.voices[key];
+    const { vca, vcf } = this.voices[key];
     const { attack, decay, sustain } = this.patch.amp;
+    const {
+      frequency,
+      attack: filterAttack,
+      decay: filterDecay,
+      sustain: filterSustain,
+    } = this.patch.filter;
 
     vca.gain.cancelScheduledValues(0);
+    vcf.frequency.cancelScheduledValues(0);
 
     const now = this.context.currentTime;
     vca.gain.setValueAtTime(0, now);
+    vcf.frequency.setValueAtTime(0, now);
+
     vca.gain.linearRampToValueAtTime(1, now + attack);
+    vcf.frequency.linearRampToValueAtTime(frequency, now + filterAttack);
 
     vca.gain.linearRampToValueAtTime(sustain, now + attack + decay);
+    vcf.frequency.linearRampToValueAtTime(frequency * filterSustain, now + filterAttack + filterDecay);
   }
 
   stop(key: string) {
-    const { vca } = this.voices[key];
+    const { vca, vcf } = this.voices[key];
     const { release } = this.patch.amp;
+    const { release: filterRelease } = this.patch.filter;
 
     const currentGain = vca.gain.value;
+    const currentFrequency = vcf.frequency.value;
     vca.gain.cancelScheduledValues(0);
+    vcf.frequency.cancelScheduledValues(0);
 
     const now = this.context.currentTime;
     vca.gain.setValueAtTime(currentGain, now);
+    vcf.frequency.setValueAtTime(currentFrequency, now);
     vca.gain.linearRampToValueAtTime(0, now + release);
+    vcf.frequency.linearRampToValueAtTime(0, now + filterRelease);
   }
 
   changeOscillator(type: Exclude<OscillatorType, "custom">) {
