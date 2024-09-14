@@ -65,8 +65,9 @@ export class Synth {
     const { vca } = this.voices[key];
     const { attack, decay, sustain } = this.patch.amp;
 
-    let now = this.context.currentTime;
     vca.gain.cancelScheduledValues(0);
+    
+    const now = this.context.currentTime;
     vca.gain.setValueAtTime(0, now);
     vca.gain.linearRampToValueAtTime(1, now + attack);
     
@@ -77,9 +78,11 @@ export class Synth {
     const { vca } = this.voices[key];
     const { release } = this.patch.amp;
 
-    let now = this.context.currentTime;
+    const currentGain = vca.gain.value;
     vca.gain.cancelScheduledValues(0);
-    vca.gain.setValueAtTime(vca.gain.value, now);
+
+    const now = this.context.currentTime;
+    vca.gain.setValueAtTime(currentGain, now);
     vca.gain.linearRampToValueAtTime(0, now + release);
   }
 

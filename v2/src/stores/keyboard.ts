@@ -23,11 +23,12 @@ const initializeKeyboardStore = () => {
       const synth = getSynthInstance();
       
       if (event.key in KEYBOARD) {
+        synth.stop(event.key);
+
         update((k) => {
           k.delete(event.key);
           return k;
         });
-        synth.stop(event.key);
       }
     },
     reset: () => set(new Set<string>()),
