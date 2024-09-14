@@ -30,7 +30,7 @@ export class Synth {
   constructor() {
     this.patch = get(PatchStore);
     this.context = new (window.AudioContext || window.webkitAudioContext)();
-    
+
     this.output = this.context.createGain();
     this.output.gain.value = DEFAULT_VOLUME;
     this.output.connect(this.context.destination);
@@ -60,16 +60,8 @@ export class Synth {
     });
   }
 
-  get currentOsc() {
-    return this.patch.osc;
-  }
-
-  get amp() {
-    return this.patch.amp;
-  }
-
-  get filter() {
-    return this.patch.filter;
+  changeOutputVolume(volume: number) {
+    this.output.gain.value = volume;
   }
 
   play(key: string) {
