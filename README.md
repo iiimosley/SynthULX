@@ -1,3 +1,16 @@
+# 🚧 Under Construction 🚧
+This app is currently being revamped for Version 2!
+ 
+### Upgrade features to include...
+- (_For instructional purposes_) Fully Web Audio API driven engine (no [Tone.js](https://tonejs.github.io/), as used in V1)
+- Frontend implementations with [Svelte](https://svelte.dev/)
+- Email+PW Authentication
+- Extended Synth Parameter controls
+- Better visualizations utilizing Audio Analyzers and D3
+...and much more!
+
+---
+
 [![Synth ULX](https://raw.githubusercontent.com/iiimosley/synthULX/master/images/synthULX-alpha.png "open Synth ULX")](https://synthulx.firebaseapp.com/)
 
 *SynthULX* is a web application designed for users of any musical background to overview basic concepts & functionalities of musical synthesis.
