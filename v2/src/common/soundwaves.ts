@@ -1,6 +1,6 @@
 export const SOUNDWAVES = ["sine", "triangle", "square", "sawtooth"] as const;
 
-export type Soundwave = (typeof SOUNDWAVES)[number];
+export type Soundwave = Exclude<OscillatorType, "custom">;
 
 export type SoundwaveDetails = {
   title: string;

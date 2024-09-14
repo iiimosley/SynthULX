@@ -1,11 +1,15 @@
 <script lang=ts>
-  import { SynthInstance } from "@/engines/synth";
   import PatchStore from "@/stores/patch";
+  import { get } from "svelte/store";
 
-  let { filter } = SynthInstance ?? $PatchStore;
+  let patch = get(PatchStore);
+
+  PatchStore.subscribe(value => {
+    patch = value;
+  });
 
   const updateFilterCutoff = () => {
-    SynthInstance?.changeFilterCutoff(filter);
+    PatchStore.changeFilter(patch.filter);
   };
 </script>
 
@@ -19,7 +23,7 @@
       min="100"
       max="15000"
       step="1"
-      bind:value={filter.frequency}
+      bind:value={patch.filter.frequency}
       on:input={updateFilterCutoff}
     />
     <label for="filter-cutoff">Frequency</label>
@@ -32,7 +36,7 @@
       min="0.01"
       max="40"
       step="0.01"
-      bind:value={filter.resonance}
+      bind:value={patch.filter.resonance}
       on:input={updateFilterCutoff}
     />
     <label for="filter-resonance">Resonance</label>

@@ -1,6 +1,6 @@
 <script>
-  import PatchStore from "@/stores/patch";
   import { DEFAULT_PATCHES } from "@/common/patch";
+  import PatchStore from "@/stores/patch";
 </script>
 
 <div id="patchWrap">

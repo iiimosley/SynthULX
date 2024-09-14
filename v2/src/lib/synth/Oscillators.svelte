@@ -1,9 +1,15 @@
 <script lang="ts">
-  import { SOUNDWAVE } from '@/common/soundwaves';
-  import { SynthInstance } from '@/engines/synth';
+  import { SOUNDWAVE, type Soundwave } from '@/common/soundwaves';
   import PatchStore from '@/stores/patch';
+  import { get } from 'svelte/store';
 
-  const soundwaves = Object.entries(SOUNDWAVE) as [OscillatorType, { title: string }][];
+  let patch = get(PatchStore);
+
+  PatchStore.subscribe(value => {
+    patch = value;
+  });
+
+  const soundwaves = Object.entries(SOUNDWAVE) as [Soundwave, { title: string }][];
 </script>
 
 <div id="oscType">
@@ -11,12 +17,12 @@
     <div>
       <label for={osc}>{title}</label>
       <input 
-        on:change={() => SynthInstance?.changeOscillator(osc)} 
+        bind:group={patch.osc}
+        on:change={() => PatchStore.changeOscillator(osc)} 
         type="radio" 
         name="osc" 
         id={osc} 
         value={osc} 
-        checked={osc === (SynthInstance?.currentOsc ?? $PatchStore.osc)}
       />
     </div>
   {/each}

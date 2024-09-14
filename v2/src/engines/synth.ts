@@ -1,9 +1,10 @@
 import type { Envelope } from "@/common/envelope";
-import type { FilterCutoff } from "@/common/filter";
 import { KEYBOARD } from "@/common/keyboard";
-import { INIT_PATCH, type IdentifiedPatch, type Patch } from "@/common/patch";
+import { type IdentifiedPatch, type Patch } from "@/common/patch";
 import { type Voice } from "@/common/synth";
 import { DEFAULT_VOLUME } from "@/common/volume";
+import PatchStore from "@/stores/patch";
+import { get } from "svelte/store";
 
 ////// Terms //////
 // VCO: Voltage Controlled Oscillator -- soundwave generator
@@ -26,23 +27,21 @@ export class Synth {
   private output: GainNode;
   private voices: Record<string, Voice> = {};
 
-  constructor(patch: Patch | IdentifiedPatch = INIT_PATCH) {
-    this.patch = patch;
+  constructor() {
+    this.patch = get(PatchStore);
     this.context = new (window.AudioContext || window.webkitAudioContext)();
+    
     this.output = this.context.createGain();
+    this.output.gain.value = DEFAULT_VOLUME;
     this.output.connect(this.context.destination);
 
     Object.entries(KEYBOARD).forEach(([note, { frequency }]) => {
       const vco = new OscillatorNode(this.context, {
         frequency,
-        detune: this.patch.detune,
-        type: this.patch.osc,
       });
 
       const vcf = this.context.createBiquadFilter();
       vcf.type = "lowpass";
-      vcf.frequency.value = this.patch.filter.frequency;
-      vcf.Q.value = this.patch.filter.resonance;
 
       const vca = this.context.createGain();
       vca.gain.value = 0;
@@ -55,7 +54,10 @@ export class Synth {
       this.voices[note] = { vco, vca, vcf };
     });
 
-    this.output.gain.value = DEFAULT_VOLUME;
+    PatchStore.subscribe((patch) => {
+      this.patch = patch;
+      this.setPatch();
+    });
   }
 
   get currentOsc() {
@@ -88,49 +90,16 @@ export class Synth {
     this.disengageEnvelope(vcf.frequency, filter);
   }
 
-  changeOscillator(type: Exclude<OscillatorType, "custom">) {
-    this.patch.osc = type;
-
-    for (const key in this.voices) {
-      this.voices[key].vco.type = this.patch.osc;
-    }
-  }
-
-  changeDetune(cents: number) {
-    this.patch.detune = cents;
-
-    for (const key in this.voices) {
-      this.voices[key].vco.detune.value = cents;
-    }
-  }
-
-  changeOutputVolume(volume: number) {
-    this.output.gain.value = volume;
-  }
-
-  changeAmpEnvelope(eg: Envelope) {
-    this.patch.amp = eg;
-  }
-
-  changeFilterCutoff(cutoff: FilterCutoff) {
-    this.changeFilter(cutoff);
-
+  private setPatch() {
     const now = this.context.currentTime;
     for (const key in this.voices) {
-      this.voices[key].vcf.frequency.setValueAtTime(this.patch.filter.frequency, now);
-      this.voices[key].vcf.Q.setValueAtTime(this.patch.filter.resonance, now);
+      let { vco, vcf } = this.voices[key];
+
+      vco.type = this.patch.osc;
+      vco.detune.value = this.patch.detune;
+      vcf.frequency.setValueAtTime(this.patch.filter.frequency, now);
+      vcf.Q.setValueAtTime(this.patch.filter.resonance, now);
     }
-  }
-
-  changeFilter(filter: FilterCutoff | Envelope) {
-    this.patch.filter = {
-      ...this.patch.filter,
-      ...filter,
-    };
-  }
-
-  changePatch(patch: Patch | IdentifiedPatch) {
-    this.patch = patch;
   }
 
   private engageEnvelope(param: AudioParam, eg: Envelope, peak: number) {

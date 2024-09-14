@@ -1,11 +1,15 @@
 <script lang=ts>
-  import { SynthInstance } from "@/engines/synth";
   import PatchStore from "@/stores/patch";
+  import { get } from "svelte/store";
 
-  let { amp } = SynthInstance ?? $PatchStore;
+  let patch = get(PatchStore);
+
+  PatchStore.subscribe(value => {
+    patch = value;
+  });
 
   const updateAmp = () => {
-    SynthInstance?.changeAmpEnvelope(amp);
+    PatchStore.changeAmpEnvelope(patch.amp);
   };
 </script>
 
@@ -18,7 +22,7 @@
     min="0.01"
     max="3"
     step="0.01"
-    bind:value={amp.attack}
+    bind:value={patch.amp.attack}
     on:input={updateAmp}
   />
   <input
@@ -28,7 +32,7 @@
     min="0.01"
     max="1"
     step="0.01"
-    bind:value={amp.decay}
+    bind:value={patch.amp.decay}
     on:input={updateAmp}
   />
   <input
@@ -38,7 +42,7 @@
     min="0.01"
     max="1"
     step="0.01"
-    bind:value={amp.sustain}
+    bind:value={patch.amp.sustain}
     on:input={updateAmp}
   />
   <input
@@ -48,7 +52,7 @@
     min="0.01"
     max="4.5"
     step="0.01"
-    bind:value={amp.release}
+    bind:value={patch.amp.release}
     on:input={updateAmp}
   />
   <div>

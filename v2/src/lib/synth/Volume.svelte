@@ -1,12 +1,14 @@
 <script lang=ts>
   import { DEFAULT_VOLUME } from "@/common/volume";
-  import { SynthInstance } from "@/engines/synth";
+  import { getSynthInstance } from "@/engines/synth";
+
+  const synth = getSynthInstance();
 </script>
 
 <div>
   <div class="textOver">
     <input
-      on:input={(event) => SynthInstance?.changeOutputVolume(event.currentTarget?.valueAsNumber)}
+      on:input={(event) => synth.changeOutputVolume(event.currentTarget?.valueAsNumber)}
       type="range"
       class="v-slide"
       name="volume"

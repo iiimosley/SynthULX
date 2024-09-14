@@ -1,11 +1,15 @@
 <script lang=ts>
-  import { SynthInstance } from "@/engines/synth";
   import PatchStore from "@/stores/patch";
+  import { get } from "svelte/store";
 
-  let { filter } = SynthInstance ?? $PatchStore;
+  let patch = get(PatchStore);
+
+  PatchStore.subscribe(value => {
+    patch = value;
+  });
 
   const updateFilterEg = () => {
-    SynthInstance?.changeFilter(filter);
+    PatchStore.changeFilter(patch.filter);
   };
 </script>
 
@@ -18,7 +22,7 @@
     min="0"
     max="3"
     step="0.01"
-    bind:value={filter.attack}
+    bind:value={patch.filter.attack}
     on:input={updateFilterEg}
   />
   <input
@@ -28,7 +32,7 @@
     min="0"
     max="1"
     step="0.01"
-    bind:value={filter.decay}
+    bind:value={patch.filter.decay}
     on:input={updateFilterEg}
   />
   <input
@@ -38,7 +42,7 @@
     min="0"
     max="1"
     step="0.01"
-    bind:value={filter.sustain}
+    bind:value={patch.filter.sustain}
     on:input={updateFilterEg}
   />
   <input
@@ -48,7 +52,7 @@
     min="0"
     max="4.5"
     step="0.01"
-    bind:value={filter.release}
+    bind:value={patch.filter.release}
     on:input={updateFilterEg}
   />
   <div>

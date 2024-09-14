@@ -1,7 +1,13 @@
 <script>
   import { OCTAVES } from '@/common/octaves';
-  import { SynthInstance } from '@/engines/synth';
   import PatchStore from '@/stores/patch';
+  import { get } from "svelte/store";
+
+  let patch = get(PatchStore);
+
+  PatchStore.subscribe(value => {
+    patch = value;
+  });
 
   const octaves = Object.entries(OCTAVES)
     .sort(([,curDetune],[,nextDetune]) => nextDetune - curDetune);
@@ -13,12 +19,13 @@
     <div>
       <label class="text-right" for={`oct${key}`}>{key}</label>
       <input 
-        on:change={() => SynthInstance?.changeDetune(detune)} 
+        bind:group={patch.detune}
+        on:change={() => PatchStore.changeDetune(detune)} 
         type="radio" 
         name="detune" 
         id={`oct${key}`}
         value={detune} 
-        checked={detune === $PatchStore.detune}
+        checked={detune === patch.detune}
       />
     </div>
   {/each}

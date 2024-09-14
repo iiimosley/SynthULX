@@ -11,26 +11,19 @@ export interface Patch {
 
 export type PatchSet = Record<string, Patch>;
 export type PatchId = keyof PatchSet;
-export type IdentifiedPatch = Patch & { id: PatchId, name: string };
-
-
-  // a = 0.1,
-  // d = 0.1, 
-  // r = 0.1,
-  // s = 1,
-export const INIT_AMP_EG = {
-  attack: 0.1,
-  decay: 0.1,
-  sustain: 1,
-  release: 0.1,
-};
+export type IdentifiedPatch = Patch & { id: PatchId; name: string };
 
 export const INIT_PATCH: IdentifiedPatch = {
   id: "init",
   name: "init",
   detune: 0,
   osc: "sine",
-  amp: INIT_AMP_EG,
+  amp: {
+    attack: 0.1,
+    decay: 0.1,
+    sustain: 1,
+    release: 0.1,
+  },
   filter: {
     attack: 0.01,
     decay: 1,
@@ -74,7 +67,7 @@ export const DEFAULT_PATCHES: IdentifiedPatch[] = [
       release: 2.87,
     },
     filter: {
-      attack: 0.01,
+      attack: 0.1,
       decay: 0.69,
       sustain: 1,
       release: 2.34,
@@ -94,8 +87,8 @@ export const DEFAULT_PATCHES: IdentifiedPatch[] = [
       release: 2.29,
     },
     filter: {
-      attack: 0.01,
-      decay: 0.01,
+      attack: 0.1,
+      decay: 0.1,
       sustain: 0.01,
       release: 1.42,
       frequency: 780,
@@ -108,7 +101,7 @@ export const DEFAULT_PATCHES: IdentifiedPatch[] = [
     detune: 0,
     osc: "square",
     amp: {
-      attack: 0.01,
+      attack: 0.1,
       decay: 1,
       sustain: 1,
       release: 2.73,
