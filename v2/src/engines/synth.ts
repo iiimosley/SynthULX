@@ -74,43 +74,18 @@ export class Synth {
     if (this.context.state === "suspended") this.context.resume();
 
     const { vca, vcf } = this.voices[key];
-    const { attack, decay, sustain } = this.patch.amp;
-    const {
-      frequency,
-      attack: filterAttack,
-      decay: filterDecay,
-      sustain: filterSustain,
-    } = this.patch.filter;
+    const { amp, filter } = this.patch;
 
-    vca.gain.cancelScheduledValues(0);
-    vcf.frequency.cancelScheduledValues(0);
-
-    const now = this.context.currentTime;
-    vca.gain.setValueAtTime(0, now);
-    vcf.frequency.setValueAtTime(0, now);
-
-    vca.gain.linearRampToValueAtTime(1, now + attack);
-    vcf.frequency.linearRampToValueAtTime(frequency, now + filterAttack);
-
-    vca.gain.linearRampToValueAtTime(sustain, now + attack + decay);
-    vcf.frequency.linearRampToValueAtTime(frequency * filterSustain, now + filterAttack + filterDecay);
+    this.engageEnvelope(vca.gain, amp, 1);
+    this.engageEnvelope(vcf.frequency, filter, this.patch.filter.frequency);
   }
 
   stop(key: string) {
     const { vca, vcf } = this.voices[key];
-    const { release } = this.patch.amp;
-    const { release: filterRelease } = this.patch.filter;
+    const { amp, filter } = this.patch;
 
-    const currentGain = vca.gain.value;
-    const currentFrequency = vcf.frequency.value;
-    vca.gain.cancelScheduledValues(0);
-    vcf.frequency.cancelScheduledValues(0);
-
-    const now = this.context.currentTime;
-    vca.gain.setValueAtTime(currentGain, now);
-    vcf.frequency.setValueAtTime(currentFrequency, now);
-    vca.gain.linearRampToValueAtTime(0, now + release);
-    vcf.frequency.linearRampToValueAtTime(0, now + filterRelease);
+    this.disengageEnvelope(vca.gain, amp);
+    this.disengageEnvelope(vcf.frequency, filter);
   }
 
   changeOscillator(type: Exclude<OscillatorType, "custom">) {
@@ -140,9 +115,10 @@ export class Synth {
   changeFilterCutoff(cutoff: FilterCutoff) {
     this.changeFilter(cutoff);
 
+    const now = this.context.currentTime;
     for (const key in this.voices) {
-      this.voices[key].vcf.frequency.value = this.patch.filter.frequency;
-      this.voices[key].vcf.Q.value = this.patch.filter.resonance;
+      this.voices[key].vcf.frequency.setValueAtTime(this.patch.filter.frequency, now);
+      this.voices[key].vcf.Q.setValueAtTime(this.patch.filter.resonance, now);
     }
   }
 
@@ -155,6 +131,28 @@ export class Synth {
 
   changePatch(patch: Patch | IdentifiedPatch) {
     this.patch = patch;
+  }
+
+  private engageEnvelope(param: AudioParam, eg: Envelope, peak: number) {
+    const { attack, decay, sustain } = eg;
+
+    param.cancelScheduledValues(0);
+    const now = this.context.currentTime;
+
+    param.setValueAtTime(0, now);
+    param.linearRampToValueAtTime(peak, now + attack);
+    param.linearRampToValueAtTime(peak * sustain, now + attack + decay);
+  }
+
+  private disengageEnvelope(param: AudioParam, eg: Envelope) {
+    const { release } = eg;
+
+    const currentValue = param.value;
+    param.cancelScheduledValues(0);
+
+    const now = this.context.currentTime;
+    param.setValueAtTime(currentValue, now);
+    param.linearRampToValueAtTime(0, now + release);
   }
 }
 
