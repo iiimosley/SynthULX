@@ -17,8 +17,8 @@
       class="v-slide"
       id="filter-cutoff"
       min="100"
-      max="8000"
-      step="10"
+      max="15000"
+      step="1"
       bind:value={filter.frequency}
       on:input={updateFilterCutoff}
     />
@@ -29,10 +29,10 @@
       type="range"
       class="v-slide"
       id="filter-resonance"
-      min="0"
-      max="18"
-      step="1"
-      value={filter.resonance}
+      min="0.01"
+      max="40"
+      step="0.01"
+      bind:value={filter.resonance}
       on:input={updateFilterCutoff}
     />
     <label for="filter-resonance">Resonance</label>
