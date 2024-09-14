@@ -1,5 +1,12 @@
-<script>
+<script lang=ts>
+  import { SynthInstance } from "@/engines/synth";
   import PatchStore from "@/stores/patch";
+
+  let { filter } = SynthInstance ?? $PatchStore;
+
+  const updateFilterEg = () => {
+    SynthInstance?.changeFilter(filter);
+  };
 </script>
 
 <div id="filterEG">
@@ -11,7 +18,8 @@
     min="0"
     max="3"
     step="0.01"
-    value={$PatchStore.filter.attack}
+    bind:value={filter.attack}
+    on:input={updateFilterEg}
   />
   <input
     type="range"
@@ -20,7 +28,8 @@
     min="0"
     max="1"
     step="0.01"
-    value={$PatchStore.filter.decay}
+    bind:value={filter.decay}
+    on:input={updateFilterEg}
   />
   <input
     type="range"
@@ -29,7 +38,8 @@
     min="0"
     max="1"
     step="0.01"
-    value={$PatchStore.filter.sustain}
+    bind:value={filter.sustain}
+    on:input={updateFilterEg}
   />
   <input
     type="range"
@@ -38,7 +48,8 @@
     min="0"
     max="4.5"
     step="0.01"
-    value={$PatchStore.filter.release}
+    bind:value={filter.release}
+    on:input={updateFilterEg}
   />
   <div>
     <label for="filter-attack">A</label>
