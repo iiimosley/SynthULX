@@ -1,15 +1,15 @@
+import type { Envelope } from "@/common/envelope";
 import type { FilterCutoff } from "@/common/filter";
 import { KEYBOARD } from "@/common/keyboard";
 import { INIT_PATCH, type IdentifiedPatch, type Patch } from "@/common/patch";
 import { type Voice } from "@/common/synth";
 import { DEFAULT_VOLUME } from "@/common/volume";
-import type { Envelope } from "../common/envelope";
 
 ////// Terms //////
 // VCO: Voltage Controlled Oscillator -- soundwave generator
-// VCA: Voltage Controlled Amplifier -- soundwave amplitude controller
-// VCF: Voltage Controlled Filter -- soundwave frequency modulation controller
-// EG:  Envelope Generator -- controls the transition of soundwaves from one state to another
+// VCA: Voltage Controlled Amplifier -- soundwave loudness controller
+// VCF: Voltage Controlled Filter -- soundwave harmonic content controller
+// EG:  Envelope Generator -- controls the transition of soundwave properties over time
 // Voices: aka, polyphony -- the number of notes that can be played simultaneously
 // Patch: a set of parameters that define the sound of the synthesizer
 ///////////////////
