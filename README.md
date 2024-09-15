@@ -9,9 +9,10 @@ This app is currently being revamped for Version 2!
 - Better visualizations utilizing Audio Analyzers and D3
 ...and much more!
 
+> The proceeding documentation is for `v1`.
 ---
 
-[![Synth ULX](https://raw.githubusercontent.com/iiimosley/synthULX/master/images/synthULX-alpha.png "open Synth ULX")](https://synthulx.firebaseapp.com/)
+[![Synth ULX](./docs/images/synthULX-alpha.png "open Synth ULX")](https://synthulx.firebaseapp.com/)
 
 *SynthULX* is a web application designed for users of any musical background to overview basic concepts & functionalities of musical synthesis.
 
@@ -33,19 +34,19 @@ This app is currently being revamped for Version 2!
   
 ###### * ADSR: Attack, Decay, Sustain, Release
 
-![Synth ULX Main](https://raw.githubusercontent.com/iiimosley/synthULX/master/images/synthULX-main.png "Synth ULX Main Page")
+![Synth ULX Main](./docs/images/synthULX-main.png "Synth ULX Main Page")
 
 ## Authenticated User Features
 
 Registered users can save, load, edit/overwrite, & delete patches that hold user-specified parameters for the synthesizer.
 
-![Synth ULX Patches](https://raw.githubusercontent.com/iiimosley/synthULX/master/images/synthULX-patches.png "Synth ULX patch menu")
+![Synth ULX Patches](./docs/images/synthULX-patches.png "Synth ULX patch menu")
 
 ## Integrative Learning
 
 *SynthULX* also provides a **SynthBuilder** feature. The **SynthBuilder** walks users through a step-by-step tutorial explaining each synthesizer component's functionality (with responsive visual diagrams to each component) and allows users to adjust parameters to their desired value. Once the tutorial is complete, the **SynthBuilder** loads the user-defined parameters to the web application synthesizer for QWERTY keyboard performance.
 
-![Synth ULX SynthBuilder](https://raw.githubusercontent.com/iiimosley/synthULX/master/images/synthULX-builder.png "Synth ULX Synth Builder")
+![Synth ULX SynthBuilder](./docs/images/synthULX-builder.png "Synth ULX Synth Builder")
 
 ## Technologies Utilized:
 - [Tone.Js](https://tonejs.github.io/):   Web-Audio API framework
